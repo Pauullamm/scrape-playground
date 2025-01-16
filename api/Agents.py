@@ -1,20 +1,12 @@
 import re, traceback
-from prompt import agent_prompt
+from prompt import agent_prompt, CODE_SYSTEM_PROMPT
 from openai import OpenAI, RateLimitError
-from Tools import *
+from Tools import actions
 import os
 from load_dotenv import load_dotenv
 from ollama import chat, ChatResponse
-import json
 
 load_dotenv()
-
-# known_actions = {
-#     "basic_scrape": scrape,
-#     "scrape_background_requests": scrape_background_requests,
-#     "take_screenshot": take_screenshot,
-#     "search_google": search_google
-# }
 
 class OpenAIAgent:
     def __init__(self, 
@@ -53,7 +45,7 @@ class OpenAIAgent:
         #try to shorten messages length
         try:
             completion = client.chat.completions.create(
-                model="gpt-4o",
+                model="o1-preview",
                 messages=self.messages
             )
             if not completion.choices:
@@ -66,7 +58,7 @@ class OpenAIAgent:
             try:
                 self.messages.pop(0)
                 completion = client.chat.completions.create(
-                model="gpt-4o",
+                model="gpt-3.5-turbo",
                 messages=self.messages
                 )
                 if not completion.choices:
@@ -104,7 +96,7 @@ class OpenAIAgent:
             i += 1
             # self.__call__(self.prompt)
             result = self.__call__(next_prompt)  # Call the model to get the response
-            print(f"Model output: {result}")
+            print(f"Model output: \n\n {result}")
             actions = [action_re.match(a) for a in result.split('\n') if action_re.match(a)]
             
             if actions:
@@ -204,33 +196,45 @@ class OllamaAgent:
 
         # If we exit the loop without returning, it means max_turns was reached
         raise Exception("Maximum number of turns reached without a result.")
+  
+class DeepSeekAgent(OpenAIAgent):
+    def __init__(self, system: str = "", prompt: str = "", tools: dict = {}, api_key: str = ""):
+        super().__init__(system, prompt, tools, api_key)
+    
+    def execute(self):
+        client = OpenAI(api_key=self.api_key, base_url="https://api.deepseek.com")
+        #try to shorten messages length
+        try:
+            completion = client.chat.completions.create(
+                model="deepseek-chat",
+                messages=self.messages,
+                stream=False
+            )
+            if not completion.choices:
+                raise Exception("No choices returned from OpenAI API.")
+            
+            response_content = completion.choices[0].message.content.strip()
+            print(response_content + '\n\n')
+            return response_content
+        except Exception as e:
+            print(f"Error during API call: {str(e)}")
+            return ""
 
-class ScraperAgent:
-    def __init__(self, 
-                system : str = "", 
-                prompt: str = "",
-                tools: dict = {},
-                api_key: str = ""):
-        self.system = system
-        self.prompt = prompt
-        self.messages = []
-        self.tools = tools
-        self.api_key = api_key
-        if self.system:
-            self.messages.append({
-                "role": "system",
-                "content": system
-            })
-        self.context = {}
-    
-    
+class ChunkingAgent:
+    """
+    An agent class which would have the ability to chunk large outputs from tool calls
+    """
+    def __init__(self):
+        pass
 
 # print(query("Does this page have any captchas? - https://www.google.co.uk/"))
 # print(query("Identify any resource links on this site: https://products.mhra.gov.uk/"))
 # agent = OpenAIAgent(prompt=agent_prompt, tools=known_actions, api_key=os.getenv('OPENAI_API_KEY'))
 # # agent = OllamaAgent(prompt=prompt, tools=known_actions)
-
+# agent = DeepSeekAgent(prompt=CODE_SYSTEM_PROMPT, tools=actions, api_key=os.getenv('DEEPSEEK_API_KEY'))
+# agent.reset_session()
 # agent.query("Identify any background resource links on this site: https://products.mhra.gov.uk/substance/?substance=ABACAVIR")
+# agent.reset_session()
 # with open("messages.json", 'w') as f:
 #     json.dump(agent.messages, f, indent=4)
 
