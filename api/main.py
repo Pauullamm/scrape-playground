@@ -4,11 +4,11 @@ from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 import uvicorn
-from Agents import OpenAIAgent
-from prompt import agent_prompt
+from Agents import OpenAIAgent, DeepSeekAgent
+from prompt import agent_prompt, CODE_SYSTEM_PROMPT
 from Tools import *
 from load_dotenv import load_dotenv
-import os, json
+import os
 
 load_dotenv()
 origins = [
@@ -39,7 +39,9 @@ async def generate_response(request: Request, message_body: MessageBody):
     try:
         auth_header = request.headers.get("Authorization")
         token = auth_header.split(" ")[1] if auth_header.startswith("Bearer ") else None
-        agent = OpenAIAgent(prompt=agent_prompt, tools=actions, api_key=token)
+        # agent = OpenAIAgent(prompt=agent_prompt, tools=actions, api_key=token)
+        agent = DeepSeekAgent(prompt=agent_prompt, tools=actions, api_key=os.getenv('DEEPSEEK_API_KEY'))
+
         query = message_body.message
 
         agent.query(query)
