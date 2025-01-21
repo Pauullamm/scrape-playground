@@ -14,7 +14,7 @@ class ScraperTool:
         self.proxy_url = None
         self.entries = []
 
-    def test_proxy(self, url):
+    def test_proxy(self, url: str):
         """
         Tests the proxy connection by sending a GET request to a test URL.
 
@@ -32,15 +32,18 @@ class ScraperTool:
             print(f"Proxy {url} failed: {e}")
             return False
     
-    def get(self, url, enable_proxy=False):
+    def get(self, url: str, enable_proxy: bool=False, get_text_markdown: bool=False):
         """
         Sends a GET request to the specified URL using the proxy.
 
         :param url: The URL to send the request to.
         :param enable_proxy: Whether to use the proxy for the request, defaults to True.
+        :param get_text_markdown: Whether to format the site to a llm-readable markdown format, defaults to False
         :return: The response from the server.
         
         """
+        if get_text_markdown:
+            url = f"https://r.jina.ai/{url}"
         if enable_proxy:
             # Check if the proxy is working
             with open("http_proxy_list.txt", "r") as file:
@@ -50,6 +53,7 @@ class ScraperTool:
                         self.proxy_url = proxy
                         break
             try:
+                
                 # Set the proxy URL
                 proxies = {'http': self.proxy_url, 'https': self.proxy_url}
 
@@ -83,11 +87,13 @@ class ScraperTool:
         soup = BeautifulSoup(html, 'html.parser')
         return soup.prettify()
     
-    def capture_har_wire(self, url: str) -> None:
+    def capture_har_wire(self, url: str, view_links: bool=True) -> None:
         '''
         method which captures network activity between the client and the server
         uses seleniumwire webdriver instead of standard selenium
-        :param url - url of site to capture background requests/apis
+        Args: 
+            url - url of site to capture background requests/apis
+            view_links - allow user to view request links, default is True
         '''
         chrome_options = Options()
         chrome_options.add_argument('--headless')  # Optional: run Chrome in headless mode
@@ -109,7 +115,7 @@ class ScraperTool:
         driver.set_page_load_timeout(30)
         driver.get(url)
         def scroll(driver):
-            for i in range(0, 6):
+            for _ in range(0, 6):
                 driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
                 time.sleep(1)
         scroll(driver)
@@ -138,7 +144,8 @@ class ScraperTool:
             return obj
 
         for request in driver.requests:
-            print(request)
+            if view_links:
+                print(request)
 
             headers = {key: value for key, value in request.headers.items()} if isinstance(request.headers, dict) else request.headers
             response_headers = {}
@@ -151,9 +158,6 @@ class ScraperTool:
                 'url': request.url,
                 'headers': headers,
                 'response_status': request.response.status_code if request.response else None,
-                'response_headers': response_headers,
-                'response_body_size': len(request.response.body) if request.response else None,
-                'response_mime_type': request.response.headers.get('Content-Type') if request.response else None,
             }
             requests_data.append(request_data)
 
@@ -198,4 +202,4 @@ class ScraperTool:
             driver.quit()
 
 # scraper = ScraperTool()
-# scraper.capture_har_wire("https://products.mhra.gov.uk/substance/?substance=ABACAVIR")
+# scraper.capture_har_wire("https://proxy.incolumitas.com/proxy_detect.html")

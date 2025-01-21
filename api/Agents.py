@@ -227,9 +227,11 @@ class ChunkingAgent:
     def __init__(self):
         pass
 
+
+#UNCOMMENT BELOW FOR TESTING -----------------------------------------------
 # print(query("Does this page have any captchas? - https://www.google.co.uk/"))
 # print(query("Identify any resource links on this site: https://products.mhra.gov.uk/"))
-# agent = OpenAIAgent(prompt=agent_prompt, tools=known_actions, api_key=os.getenv('OPENAI_API_KEY'))
+# agent = OpenAIAgent(prompt=agent_prompt, tools=actions, api_key=os.getenv('OPENAI_API_KEY'))
 # # agent = OllamaAgent(prompt=prompt, tools=known_actions)
 # agent = DeepSeekAgent(prompt=CODE_SYSTEM_PROMPT, tools=actions, api_key=os.getenv('DEEPSEEK_API_KEY'))
 # agent.reset_session()
