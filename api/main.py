@@ -54,6 +54,13 @@ async def generate_response(request: Request, message_body: MessageBody):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+@app.post("/generate_test")
+async def generate_response(request: Request, message_body: MessageBody):
+    try:
+        data = scrape_background_requests(message_body.message)
+        return JSONResponse(content=jsonable_encoder(data))
+    except Exception as e:
+        return JSONResponse(content={"error": str(e)})
 
 if __name__ == "__main__":
     uvicorn.run("main:app", port=5000, log_level="info", reload=True)    

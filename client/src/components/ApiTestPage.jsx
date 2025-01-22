@@ -127,20 +127,20 @@ export default function ApiTestPage() {
                     {showHeaders && (
                         <div className="mt-4 space-y-4">
                             {headers.map((header, index) => (
-                                <div key={index} className="flex gap-4">
+                                <div key={index} className="flex gap-4 w-full">
                                     <input
                                         type="text"
                                         value={header.key}
                                         onChange={(e) => updateHeader(index, 'key', e.target.value)}
                                         placeholder="Header Key"
-                                        className="flex-1 bg-gray-600 text-white px-4 py-2 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                                        className="flex-1 bg-gray-600 text-white px-4 py-2 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none min-w-0"
                                     />
                                     <input
                                         type="text"
                                         value={header.value}
                                         onChange={(e) => updateHeader(index, 'value', e.target.value)}
                                         placeholder="Header Value"
-                                        className="flex-1 bg-gray-600 text-white px-4 py-2 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                                        className="flex-1 bg-gray-600 text-white px-4 py-2 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none min-w-0"
                                     />
                                     <button
                                         onClick={() => removeHeader(index)}

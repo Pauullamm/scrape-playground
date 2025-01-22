@@ -14,12 +14,6 @@ export default function Navbar() {
                         </div>
                     </Link>
                     <div className="flex items-center space-x-4">
-                        <Link to={'/api-test'}>
-                            <button className="p-2 rounded-lg hover:bg-gray-700 flex items-center gap-2">
-                                <FlaskConical className="w-5 h-5" />
-                                <span className="hidden sm:inline">API Test</span>
-                            </button>
-                        </Link>
                         <Link to={'/settings'}>
                             <button className="p-2 rounded-lg hover:bg-gray-700">
                                 <Settings className="w-5 h-5" />

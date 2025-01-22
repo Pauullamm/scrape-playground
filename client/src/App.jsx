@@ -1,8 +1,8 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import SettingsPage from './components/SettingsPage';
-import HomePage from './components/HomePage';
-import ApiTestPage from './components/ApiTestPage';
+// import HomePage from './components/HomePage';
+import ToolBox from './components/ToolBox';
 
 function App() {
   return (
@@ -10,9 +10,8 @@ function App() {
       <Router>
         <Navbar />
         <Routes>
-          <Route path="/" element={<HomePage />} />
+          <Route path="/" element={<ToolBox />} />
           <Route path='/settings' element={<SettingsPage />} />
-          <Route path='/api-test' element={<ApiTestPage />} />
         </Routes>
       </Router>
     </div>
