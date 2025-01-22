@@ -1,16 +1,18 @@
 import React, { useState } from 'react';
 import { Send, Plus, Trash2, ChevronDown, ChevronUp } from 'lucide-react';
+import '../App.css'
 
-export default function ApiTestPage() {
-    const [url, setUrl] = useState('');
+export default function ApiTestPage({ state, setState}) {
+    const [url, setUrl] = useState(state.url ? state.url : '');
     const [method, setMethod] = useState('GET');
-    const [headers, setHeaders] = useState([{ key: '', value: '' }]);
+    const [headers, setHeaders] = useState(state.headers ? state.headers : [{ key: '', value: '' }]);
     const [body, setBody] = useState('');
-    const [params, setParams] = useState(null);
     const [response, setResponse] = useState(null);
     const [loading, setLoading] = useState(false);
     const [showHeaders, setShowHeaders] = useState(true);
     const [showBody, setShowBody] = useState(true);
+    const [rawHeadersInput, setRawHeadersInput] = useState(''); // Raw headers input
+    const [useRawHeaders, setUseRawHeaders] = useState(false); // Toggle between raw and key-value inputs
 
     const methods = ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'];
 
@@ -84,6 +86,33 @@ export default function ApiTestPage() {
         }
     };
 
+    // Function to parse raw headers input
+    const parseRawHeaders = () => {
+        try {
+            // Remove curly braces and split into key-value pairs
+            const cleanedInput = rawHeadersInput.replace(/[{}]/g, '').trim();
+            if (!cleanedInput) {
+                setHeaders([{ key: '', value: '' }]);
+                return;
+            }
+
+            // Split into individual key-value pairs
+            const pairs = cleanedInput.split(',').map(pair => pair.trim());
+
+            // Parse each key-value pair
+            const parsedHeaders = pairs.map(pair => {
+                const [key, value] = pair.split(':').map(part => part.trim().replace(/['"]/g, ''));
+                return { key, value };
+            });
+
+            // Update headers state
+            setHeaders(parsedHeaders);
+        } catch (error) {
+            console.error('Error parsing headers:', error);
+            alert('Invalid format. Please paste a valid Python dictionary.');
+        }
+    };
+
     return (
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
             <div className="space-y-6">
@@ -126,36 +155,72 @@ export default function ApiTestPage() {
                     </div>
                     {showHeaders && (
                         <div className="mt-4 space-y-4">
-                            {headers.map((header, index) => (
-                                <div key={index} className="flex gap-4 w-full">
+                            {/* Toggle Switch */}
+                            <div className="flex items-center gap-2">
+                                <span className="text-sm">Use Raw Headers</span>
+                                <label className="switch">
                                     <input
-                                        type="text"
-                                        value={header.key}
-                                        onChange={(e) => updateHeader(index, 'key', e.target.value)}
-                                        placeholder="Header Key"
-                                        className="flex-1 bg-gray-600 text-white px-4 py-2 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none min-w-0"
+                                        type="checkbox"
+                                        checked={useRawHeaders}
+                                        onChange={() => setUseRawHeaders(!useRawHeaders)}
                                     />
-                                    <input
-                                        type="text"
-                                        value={header.value}
-                                        onChange={(e) => updateHeader(index, 'value', e.target.value)}
-                                        placeholder="Header Value"
-                                        className="flex-1 bg-gray-600 text-white px-4 py-2 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none min-w-0"
+                                    <span className="slider"></span>
+                                </label>
+                            </div>
+
+                            {/* Raw Headers Input */}
+                            {useRawHeaders && (
+                                <>
+                                    <textarea
+                                        value={rawHeadersInput}
+                                        onChange={(e) => setRawHeadersInput(e.target.value)}
+                                        placeholder="Paste Python dictionary here (e.g., {'key1': 'value1', 'key2': 'value2'})"
+                                        className="w-full h-24 bg-gray-600 text-white px-4 py-2 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none font-mono"
                                     />
                                     <button
-                                        onClick={() => removeHeader(index)}
-                                        className="p-2 hover:bg-gray-600 rounded-lg"
+                                        onClick={parseRawHeaders}
+                                        className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg"
                                     >
-                                        <Trash2 className="w-5 h-5 text-red-400" />
+                                        Parse Headers
                                     </button>
-                                </div>
-                            ))}
-                            <button
-                                onClick={addHeader}
-                                className="flex items-center gap-2 text-blue-400 hover:text-blue-300"
-                            >
-                                <Plus className="w-4 h-4" /> Add Header
-                            </button>
+                                </>
+                            )}
+
+                            {/* Key-Value Inputs */}
+                            {!useRawHeaders && (
+                                <>
+                                    {headers.map((header, index) => (
+                                        <div key={index} className="flex gap-4 w-full">
+                                            <input
+                                                type="text"
+                                                value={header.key}
+                                                onChange={(e) => updateHeader(index, 'key', e.target.value)}
+                                                placeholder="Header Key"
+                                                className="flex-1 bg-gray-600 text-white px-4 py-2 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none min-w-0"
+                                            />
+                                            <input
+                                                type="text"
+                                                value={header.value}
+                                                onChange={(e) => updateHeader(index, 'value', e.target.value)}
+                                                placeholder="Header Value"
+                                                className="flex-1 bg-gray-600 text-white px-4 py-2 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none min-w-0"
+                                            />
+                                            <button
+                                                onClick={() => removeHeader(index)}
+                                                className="p-2 hover:bg-gray-600 rounded-lg"
+                                            >
+                                                <Trash2 className="w-5 h-5 text-red-400" />
+                                            </button>
+                                        </div>
+                                    ))}
+                                    <button
+                                        onClick={addHeader}
+                                        className="flex items-center gap-2 text-blue-400 hover:text-blue-300"
+                                    >
+                                        <Plus className="w-4 h-4" /> Add Header
+                                    </button>
+                                </>
+                            )}
                         </div>
                     )}
                 </div>
