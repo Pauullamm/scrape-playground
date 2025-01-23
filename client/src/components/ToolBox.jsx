@@ -56,7 +56,7 @@ export default function ToolBox() {
   return (
     <div className="h-screen bg-[#1A1A1A] text-white flex flex-col">
       {/* Header */}
-      <header className="border-b border-[#2A2A2A] p-4">
+      <header className="h-14 border-b border-[#2A2A2A] p-4">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <h1 className="text-xl font-bold">Testing Suite</h1>
           <button
@@ -69,10 +69,10 @@ export default function ToolBox() {
       </header>
 
       {/* Main Content */}
-      <main className="flex-1 flex overflow-hidden">
+      <main className="flex-1 flex min-h-0">
         {/* Editor Area */}
-        <div className="flex-1 overflow-hidden">
-          <div className="h-full max-w-7xl mx-auto px-4 py-6">
+        <div className="flex-1 min-h-0">
+          <div className="h-full max-w-7xl mx-auto px-4 py-6 flex flex-col">
             {/* Tab Navigation */}
             <div className="flex space-x-4 mb-4">
               {tabs.map((tab) => (
