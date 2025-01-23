@@ -21,12 +21,12 @@ export default function ToolBox() {
     return savedMessages
       ? JSON.parse(savedMessages)
       : [
-          {
-            message: "Hi! I'm your AI assistant. How can I help you with your testing today?",
-            direction: 'incoming',
-            position: 'single',
-          },
-        ];
+        {
+          message: "Hi! I'm your AI assistant. How can I help you with your testing today?",
+          direction: 'incoming',
+          position: 'single',
+        },
+      ];
   });
 
   // State for each tab
@@ -58,7 +58,13 @@ export default function ToolBox() {
       {/* Header */}
       <header className="h-14 border-b border-[#2A2A2A] p-4">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
-          <h1 className="text-xl font-bold">Testing Suite</h1>
+          <div className="flex items-center gap-2">
+            <h1 className="text-xl font-bold">Terrier</h1>
+            <img
+              src='white-retriever-removebg-preview.png'
+              style={{ height: '2em', width: '2em' }}
+            />
+          </div>
           <button
             onClick={() => setIsChatOpen(!isChatOpen)}
             className="p-2 hover:bg-[#2A2A2A] rounded-lg transition-colors"
@@ -79,11 +85,10 @@ export default function ToolBox() {
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-colors ${
-                    activeTab === tab.id
+                  className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-colors ${activeTab === tab.id
                       ? 'bg-[#2A2A2A] text-white'
                       : 'bg-[#1A1A1A] text-gray-400 hover:bg-[#2A2A2A] hover:text-white'
-                  }`}
+                    }`}
                 >
                   <tab.icon size={18} />
                   <span>{tab.label}</span>
@@ -100,9 +105,8 @@ export default function ToolBox() {
 
         {/* Chat Sidebar */}
         <div
-          className={`fixed inset-y-0 right-0 w-96 bg-[#212121] border-l border-[#2A2A2A] transform transition-transform duration-300 ${
-            isChatOpen ? 'translate-x-0' : 'translate-x-full'
-          }`}
+          className={`fixed inset-y-0 right-0 w-96 bg-[#212121] border-l border-[#2A2A2A] transform transition-transform duration-300 ${isChatOpen ? 'translate-x-0' : 'translate-x-full'
+            }`}
         >
           {/* Chat Header */}
           <div className="px-4 py-2 flex items-center justify-between border-b border-[#2A2A2A]">
