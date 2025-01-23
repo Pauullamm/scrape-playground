@@ -56,12 +56,12 @@ export default function ToolBox() {
   return (
     <div className="h-screen bg-[#1A1A1A] text-white flex flex-col">
       {/* Header */}
-      <header className="h-14 border-b border-[#2A2A2A] p-4">
+      <header className="h-16 border-b border-[#2A2A2A] p-4">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <h1 className="text-xl font-bold">Terrier</h1>
+          <div className="flex items-center gap-1">
+            <h1 className="text-3xl font-bold">Terrier</h1>
             <img
-              src='white-retriever-removebg-preview.png'
+              src='white-dog-logo.png'
               style={{ height: '2em', width: '2em' }}
             />
           </div>

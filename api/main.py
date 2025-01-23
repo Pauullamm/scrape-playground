@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException, Request
+from fastapi import FastAPI, HTTPException, Request, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
@@ -9,7 +9,11 @@ from prompt import agent_prompt, CODE_SYSTEM_PROMPT
 from Tools import *
 from load_dotenv import load_dotenv
 import os
+import logging
+from langchain_openai import ChatOpenAI
+from browser_use import Agent
 
+logger = logging.getLogger(__name__)
 load_dotenv()
 origins = [
     "http://127.0.0.1:56084",
@@ -61,6 +65,44 @@ async def generate_response(request: Request, message_body: MessageBody):
         return JSONResponse(content=jsonable_encoder(data))
     except Exception as e:
         return JSONResponse(content={"error": str(e)})
+
+@app.websocket("/ws")
+async def websocket_endpoint(websocket: WebSocket):
+    llm = ChatOpenAI(model="gpt-4o", api_key=os.getenv('OPENAI_API_KEY'))
+    await websocket.accept()
+    try:
+        
+        while True:
+            data = await websocket.receive_text()
+            await websocket.send_json({
+                "type": "status",
+                "data": f"Received command: {data}"
+            })
+            agent = Agent(
+                task=data,
+                llm=llm
+                
+            )
+            result = await agent.run()
+            serialized_history = {
+                    "history": result.model_dump()["history"],  # Use Pydantic's model_dump
+                    "metadata": {
+                        "success": result.history.is_done(),
+                        "errors": result.history.errors(),
+                        "steps": len(result.history.history),
+                        "final_result": result.history.final_result()
+                    }
+                }
+            await websocket.send_json({
+                "type": "result",
+                "data": serialized_history
+            })
+    except WebSocketDisconnect:
+        logger.info("Connection closed")
+    except Exception as e:
+        logger.error(e)
+        await websocket.send_text(f"An error occurred: {e}")
+        await websocket.close()
 
 if __name__ == "__main__":
     uvicorn.run("main:app", port=5000, log_level="info", reload=True)    

@@ -76,7 +76,7 @@ export default function RequestCapture({ state, setState }) {
       <div className="flex flex-col h-full">
         <div className="mb-4">
           <h2 className="text-lg font-semibold mb-2">Request Capture</h2>
-          <p className="text-gray-400">Capture and analyze background HTTP requests.</p>
+          <p className="text-gray-400">Sniff and analyze background HTTP requests.</p>
         </div>
 
         <div className="mb-4">
