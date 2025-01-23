@@ -20,11 +20,10 @@ export default function RequestCapture({ state, setState }) {
     setLoading(true);
     try {
       // Send the request to your backend
-      const response = await fetch(`${BACKEND_URL}/generate_test`, {
+      const response = await fetch(`${BACKEND_URL}/background_capture`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${API_KEY}`, // If API_KEY is needed for authentication
         },
         body: JSON.stringify({
           message: url,
@@ -38,6 +37,7 @@ export default function RequestCapture({ state, setState }) {
       // Parse the response data from your backend
       const data = await response.json();
       if (data) {
+        
         setResources(data); // Assuming the backend returns an array of request_data objects
         setState({
           url: url,
@@ -46,9 +46,11 @@ export default function RequestCapture({ state, setState }) {
         setLoading(false);
       } else {
         console.error('Invalid response format from backend:', data);
+        setLoading(false);
       }
     } catch (error) {
       console.error('Error processing message:', error);
+      setLoading(false);
     }
   };
 

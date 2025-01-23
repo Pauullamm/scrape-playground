@@ -64,6 +64,7 @@ export default function ToolBox() {
               src='white-dog-logo.png'
               style={{ height: '2em', width: '2em' }}
             />
+            <h2 className="text-md italic">Your Web Scraping Companion</h2>
           </div>
           <button
             onClick={() => setIsChatOpen(!isChatOpen)}

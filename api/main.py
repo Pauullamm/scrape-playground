@@ -15,6 +15,8 @@ from browser_use import Agent
 
 logger = logging.getLogger(__name__)
 load_dotenv()
+
+#
 origins = [
     "http://127.0.0.1:56084",
     "http://127.0.0.1:5173",
@@ -58,14 +60,29 @@ async def generate_response(request: Request, message_body: MessageBody):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-@app.post("/generate_test")
-async def generate_response(request: Request, message_body: MessageBody):
+@app.post("/background_capture")
+async def background_capture(request: Request, message_body: MessageBody):
     try:
+        if request.method == "OPTIONS":
+            return JSONResponse(
+                content={"message": "OK"},
+                headers={
+                    "Access-Control-Allow-Origin": ",".join(origins),
+                    "Access-Control-Allow-Methods": "POST, OPTIONS",
+                    "Access-Control-Allow-Headers": "Content-Type",
+                },
+            )
         data = scrape_background_requests(message_body.message)
-        return JSONResponse(content=jsonable_encoder(data))
+        return JSONResponse(
+            content=jsonable_encoder(data),
+            headers={"Access-Control-Allow-Origin": ",".join(origins)}
+        )    
     except Exception as e:
-        return JSONResponse(content={"error": str(e)})
-
+        return JSONResponse(
+            content={"error": str(e)},
+            status_code=500,
+            headers={"Access-Control-Allow-Origin": ",".join(origins)}
+        )
 @app.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket):
     llm = ChatOpenAI(model="gpt-4o", api_key=os.getenv('OPENAI_API_KEY'))
