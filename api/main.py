@@ -12,6 +12,8 @@ import os
 import logging
 from langchain_openai import ChatOpenAI
 from browser_use import Agent
+from modAgent import modAgent
+from modController import modController
 
 logger = logging.getLogger(__name__)
 load_dotenv()
@@ -101,6 +103,7 @@ async def websocket_endpoint(websocket: WebSocket):
                 
             )
             result = await agent.run()
+            print(agent.history)
             serialized_history = {
                     "history": result.model_dump()["history"],  # Use Pydantic's model_dump
                     "metadata": {
@@ -114,6 +117,32 @@ async def websocket_endpoint(websocket: WebSocket):
                 "type": "result",
                 "data": serialized_history
             })
+    except WebSocketDisconnect:
+        logger.info("Connection closed")
+    except Exception as e:
+        logger.error(e)
+        await websocket.send_text(f"An error occurred: {e}")
+        await websocket.close()
+
+@app.websocket("/mod_ws")
+async def mod_websocket_endpoint(websocket: WebSocket):
+    llm = ChatOpenAI(model="gpt-4o", api_key=os.getenv('OPENAI_API_KEY'))
+    await websocket.accept()
+    try:
+        
+        while True:
+            data = await websocket.receive_text()
+            await websocket.send_json({
+                "type": "status",
+                "data": f"Received command: {data}"
+            })
+            agent = modAgent(
+                task=data,
+                llm=llm,
+                websocket=websocket,
+                controller=modController(websocket=websocket)
+            )
+            await agent.run()
     except WebSocketDisconnect:
         logger.info("Connection closed")
     except Exception as e:
