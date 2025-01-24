@@ -11,11 +11,6 @@ We welcome all types of contributions! Here's how to get started:
 
 ## Development Guidelines 📝
 
-### Code Style
-- Frontend: Follow Airbnb JavaScript Style Guide
-- Backend: PEP8 compliance with Black formatting
-- Commit messages: Use [Conventional Commits](https://www.conventionalcommits.org/)
-
 
 ### Pull Request Process
 1. Ensure all tests pass
@@ -28,6 +23,7 @@ We're particularly interested in contributions related to:
 - UI-TARS component library integration
 - smolagents/smolVLM implementations
 - Browser-use extension development
+- proxy implementation across the project
 
 ---
 
