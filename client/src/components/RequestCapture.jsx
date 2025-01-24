@@ -137,7 +137,7 @@ export default function RequestCapture({ state, setState }) {
           <select
             value={filterMethod}
             onChange={(e) => setFilterMethod(e.target.value)}
-            className="bg-[#1A1A1A] rounded-lg border border-[#2A2A2A] p-2 text-gray-300 focus:outline-none focus:border-[#3A3A3A]"
+            className="bg-[#1A1A1A] rounded-lg border border-[#2A2A2A] p-2 text-gray-300 focus:outline-none focus:border-[#3A3A3A] min-w-0"
           >
             <option value="">All Methods</option>
             <option value="GET">GET</option>
@@ -148,7 +148,7 @@ export default function RequestCapture({ state, setState }) {
           <select
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value)}
-            className="bg-[#1A1A1A] rounded-lg border border-[#2A2A2A] p-2 text-gray-300 focus:outline-none focus:border-[#3A3A3A]"
+            className="bg-[#1A1A1A] rounded-lg border border-[#2A2A2A] p-2 text-gray-300 focus:outline-none focus:border-[#3A3A3A] min-w-0"
           >
             <option value="method">Sort by Method</option>
             <option value="url">Sort by URL</option>
@@ -157,7 +157,7 @@ export default function RequestCapture({ state, setState }) {
           <select
             value={sortOrder}
             onChange={(e) => setSortOrder(e.target.value)}
-            className="bg-[#1A1A1A] rounded-lg border border-[#2A2A2A] p-2 text-gray-300 focus:outline-none focus:border-[#3A3A3A]"
+            className="bg-[#1A1A1A] rounded-lg border border-[#2A2A2A] p-2 text-gray-300 focus:outline-none focus:border-[#3A3A3A] min-w-0"
           >
             <option value="asc">Ascending</option>
             <option value="desc">Descending</option>

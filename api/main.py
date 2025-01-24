@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException, Request, WebSocket, WebSocketDisconnect
+from fastapi import FastAPI, HTTPException, Request, WebSocket, WebSocketDisconnect, WebSocketException, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
@@ -16,6 +16,7 @@ from modAgent import modAgent
 from modController import modController
 
 logger = logging.getLogger(__name__)
+server_active = True
 load_dotenv()
 
 #
@@ -40,6 +41,18 @@ class MessageBody(BaseModel):
 class ResponseBody(BaseModel):
     response: str
 
+async def validate_api_key(websocket: WebSocket):
+    api_key = websocket.headers.get("x-api-key") or websocket.query_params.get("api_key")
+    if not api_key or api_key != os.getenv("API_KEY"):
+        await websocket.send_json({
+            "type": "error",
+            "data": "Invalid API key"
+        })
+        await websocket.close()
+        raise WebSocketException(
+            code=status.WS_1008_POLICY_VIOLATION,
+            detail="Invalid API key"
+        )
 # Define the endpoint
 @app.post("/generate")
 async def generate_response(request: Request, message_body: MessageBody):
@@ -85,6 +98,7 @@ async def background_capture(request: Request, message_body: MessageBody):
             status_code=500,
             headers={"Access-Control-Allow-Origin": ",".join(origins)}
         )
+
 @app.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket):
     llm = ChatOpenAI(model="gpt-4o", api_key=os.getenv('OPENAI_API_KEY'))
@@ -126,6 +140,9 @@ async def websocket_endpoint(websocket: WebSocket):
 
 @app.websocket("/mod_ws")
 async def mod_websocket_endpoint(websocket: WebSocket):
+    if not server_active:
+        await websocket.close(code=status.WS_1013_TRY_AGAIN_LATER)
+        return
     llm = ChatOpenAI(model="gpt-4o", api_key=os.getenv('OPENAI_API_KEY'))
     await websocket.accept()
     try:
@@ -149,6 +166,12 @@ async def mod_websocket_endpoint(websocket: WebSocket):
         logger.error(e)
         await websocket.send_text(f"An error occurred: {e}")
         await websocket.close()
+
+@app.post("/admin/shutdown")
+async def shutdown_server():
+    global server_active
+    server_active = False
+    return {"message": "Server shutting down"}
 
 if __name__ == "__main__":
     uvicorn.run("main:app", port=5000, log_level="info", reload=True)    
