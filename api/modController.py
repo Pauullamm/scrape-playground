@@ -47,6 +47,18 @@ class modController:
 
         # Basic Navigation Actions
         @self.registry.action(
+            'Navigate to URL in the current tab', param_model=GoToUrlAction, requires_browser=True
+        )
+        async def go_to_url(params: GoToUrlAction, browser: BrowserContext):
+            page = await browser.get_current_page()
+            await page.goto(params.url)
+            await page.wait_for_load_state()
+            msg = f'🔗  Navigated to {params.url}'
+            logger.info(msg)
+            await self.send_log(msg)
+            return ActionResult(extracted_content=msg, include_in_memory=True)
+        
+        @self.registry.action(
             'Search Google in the current tab',
             param_model=SearchGoogleAction,
             requires_browser=True,
@@ -56,18 +68,6 @@ class modController:
             await page.goto(f'https://www.google.com/search?q={params.query}&udm=14')
             await page.wait_for_load_state()
             msg = f'🔍  Searched for "{params.query}" in Google'
-            logger.info(msg)
-            await self.send_log(msg)
-            return ActionResult(extracted_content=msg, include_in_memory=True)
-
-        @self.registry.action(
-            'Navigate to URL in the current tab', param_model=GoToUrlAction, requires_browser=True
-        )
-        async def go_to_url(params: GoToUrlAction, browser: BrowserContext):
-            page = await browser.get_current_page()
-            await page.goto(params.url)
-            await page.wait_for_load_state()
-            msg = f'🔗  Navigated to {params.url}'
             logger.info(msg)
             await self.send_log(msg)
             return ActionResult(extracted_content=msg, include_in_memory=True)
@@ -557,7 +557,6 @@ class modController:
             results.append(await self.act(action, browser_context))
 
             logger.debug(f'Executed action {i + 1} / {len(actions)}')
-            await self.send_log(f'Executed action {i + 1} / {len(actions)}')
             if results[-1].is_done or results[-1].error or i == len(actions) - 1:
                 break
 

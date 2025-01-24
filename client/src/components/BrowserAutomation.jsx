@@ -24,14 +24,20 @@ export default function BrowserAutomation() {
     ws.current.onmessage = (event) => {
       try {
         if (event.data instanceof Blob) {
+          // Handle binary data (e.g., image or GIF)
           const blob = event.data;
           const url = URL.createObjectURL(blob);
+
+          // Determine the type based on the content (if possible)
+          const type = blob.type.startsWith('image/gif') ? 'gif' : 'image';
+
           setHistory(prev => [...prev, {
-            type: 'gif',
-            content: url,
+            type: type, // 'image' or 'gif'
+            content: url, // Blob URL
             timestamp: new Date().toISOString()
           }]);
         } else {
+          // Handle text messages
           const message = event.data;
           setHistory(prev => [...prev, {
             type: 'message',
@@ -39,6 +45,8 @@ export default function BrowserAutomation() {
             timestamp: new Date().toISOString()
           }]);
         }
+
+
         scrollToBottom();
 
       } catch (e) {
@@ -99,8 +107,8 @@ export default function BrowserAutomation() {
                 <div
                   key={index}
                   className={`p-3 rounded-lg ${entry.type === 'error' ? 'bg-red-900/20 border border-red-800/50' :
-                      entry.type === 'result' ? (entry.success ? 'bg-green-900/20' : 'bg-yellow-900/20') :
-                        'bg-[#2A2A2A]'
+                    entry.type === 'result' ? (entry.success ? 'bg-green-900/20' : 'bg-yellow-900/20') :
+                      'bg-[#2A2A2A]'
                     }`}
                 >
                   <div className="flex justify-between text-xs text-gray-400 mb-1">
@@ -108,12 +116,15 @@ export default function BrowserAutomation() {
                     <span className="uppercase">{entry.type}</span>
                   </div>
                   {entry.type === 'gif' ? (
-                    <img src={entry.content} alt="GIF" className="w-full" />
-                  ) : (
-                    <div className="text-gray-100 font-mono break-words whitespace-pre-wrap">
-                      {entry.content}
-                    </div>
-                  )}
+                    <img src={entry.content} alt="GIF" className="w-1/2" />
+                  ) : entry.type === 'image' ? (
+                    <img src={entry.content} alt="Image" className="w-1/2" />
+                  ) :
+                    (
+                      <div className="text-gray-100 font-mono break-words whitespace-pre-wrap">
+                        {entry.content}
+                      </div>
+                    )}
                 </div>
               ))}
               <div ref={historyEndRef} />

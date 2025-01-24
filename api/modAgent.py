@@ -119,13 +119,14 @@ class modAgent:
             self.browser_context = browser_context
         elif self.browser:
             self.browser_context = BrowserContext(
-                browser=self.browser, config=self.browser.config.new_context_config
+                browser=self.browser,
+                config=self.browser.config.new_context_config
             )
         else:
             # If neither is provided, create both new
             self.browser = Browser()
             self.browser_context = BrowserContext(browser=self.browser)
-
+            self.browser.config.headless = True
         self.system_prompt_class = system_prompt_class
 
         # Telemetry setup
@@ -232,7 +233,7 @@ class modAgent:
                 return
 
             if state:
-                self._make_history_item(model_output, state, result)
+                await self._make_history_item(model_output, state, result)
 
     async def _handle_step_error(self, error: Exception) -> list[ActionResult]:
         """Handle all types of errors that can occur during a step"""
@@ -265,7 +266,7 @@ class modAgent:
 
         return [ActionResult(error=error_msg, include_in_memory=True)]
 
-    def _make_history_item(
+    async def _make_history_item(
         self,
         model_output: AgentOutput | None,
         state: BrowserState,
@@ -289,7 +290,7 @@ class modAgent:
             interacted_element=interacted_elements,
             screenshot=state.screenshot,
         )
-
+        await self.websocket.send_bytes(base64.b64decode(state.screenshot))
         history_item = AgentHistory(model_output=model_output, result=result, state=state_history)
 
         self.history.history.append(history_item)
@@ -413,7 +414,7 @@ class modAgent:
     async def run(self, max_steps: int = 100) -> AgentHistoryList:
         """Execute the task with maximum number of steps"""
         try:
-            self._log_agent_run()
+            await self._log_agent_run()
 
             for step in range(max_steps):
                 if self._too_many_failures():
@@ -950,7 +951,7 @@ class modAgent:
 
         return '\n'.join(lines)
 
-    def _create_frame(
+    async def _create_frame(
         self, screenshot: str, text: str, step_number: int, width: int = 1200, height: int = 800
     ) -> Image.Image:
         """Create a frame for the GIF with improved styling"""
@@ -1056,5 +1057,4 @@ class modAgent:
         number_x = number_bg_coords[0] + ((number_box_width - number_size[0]) // 2)
         number_y = number_bg_coords[1] + ((number_box_height - number_size[1]) // 2)
         draw.text((number_x, number_y), number_text, font=number_font, fill='white')
-
         return frame
