@@ -12,8 +12,13 @@ export default function BrowserAutomation() {
     historyEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
-  useEffect(() => {
-    // Connect to WebSocket when component mounts
+  const connectWebSocket = () => {
+    // Close existing connection if it exists
+    if (ws.current) {
+      ws.current.close();
+    }
+
+    // Connect to WebSocket
     ws.current = new WebSocket('ws://127.0.0.1:5000/mod_ws');
 
     ws.current.onopen = () => {
@@ -36,6 +41,7 @@ export default function BrowserAutomation() {
             content: url, // Blob URL
             timestamp: new Date().toISOString()
           }]);
+          scrollToBottom();
         } else {
           // Handle text messages
           const message = event.data;
@@ -44,11 +50,10 @@ export default function BrowserAutomation() {
             content: message,
             timestamp: new Date().toISOString()
           }]);
+          scrollToBottom();
         }
 
-
         scrollToBottom();
-
       } catch (e) {
         console.error('Failed to parse message:', event.data);
         setHistory(prev => [...prev, {
@@ -68,6 +73,19 @@ export default function BrowserAutomation() {
       setStatus('Connection error');
       setError(error.message || 'WebSocket error occurred');
     };
+  };
+
+  const disconnectWebSocket = () => {
+    if (ws.current) {
+      ws.current.close();
+      setStatus('Connection closed');
+      setError('Disconnected from server');
+    }
+  };
+
+  useEffect(() => {
+    // Connect to WebSocket when component mounts
+    connectWebSocket();
 
     return () => {
       if (ws.current) {
@@ -96,7 +114,24 @@ export default function BrowserAutomation() {
       <div className="flex flex-col h-full">
         <div className="mb-4">
           <h2 className="text-lg font-semibold mb-2">Browser Automation</h2>
-          <p className="text-gray-400">{status}</p>
+          <div className="flex items-center gap-2">
+            <p className="text-gray-400">{status}</p>
+            {ws.current && ws.current.readyState === WebSocket.OPEN ? (
+              <button
+                onClick={disconnectWebSocket}
+                className="bg-red-600 hover:bg-red-700 px-4 py-2 rounded-lg text-white transition-colors"
+              >
+                Disconnect
+              </button>
+            ) : (
+              <button
+                onClick={connectWebSocket}
+                className="bg-green-600 hover:bg-green-700 px-4 py-2 rounded-lg text-white transition-colors"
+              >
+                Connect
+              </button>
+            )}
+          </div>
           {error && <p className="text-red-500 text-sm mt-1">{error}</p>}
         </div>
 
@@ -119,12 +154,11 @@ export default function BrowserAutomation() {
                     <img src={entry.content} alt="GIF" className="w-1/2" />
                   ) : entry.type === 'image' ? (
                     <img src={entry.content} alt="Image" className="w-1/2" />
-                  ) :
-                    (
-                      <div className="text-gray-100 font-mono break-words whitespace-pre-wrap">
-                        {entry.content}
-                      </div>
-                    )}
+                  ) : (
+                    <div className="text-gray-100 font-mono break-words whitespace-pre-wrap">
+                      {entry.content}
+                    </div>
+                  )}
                 </div>
               ))}
               <div ref={historyEndRef} />

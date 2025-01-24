@@ -113,6 +113,7 @@ class modAgent:
 
         # Initialize browser first if needed
         self.browser = browser if browser is not None else (None if browser_context else Browser())
+        self.browser.config.headless = True
 
         # Initialize browser context
         if browser_context:
@@ -122,6 +123,8 @@ class modAgent:
                 browser=self.browser,
                 config=self.browser.config.new_context_config
             )
+            self.browser.config.headless = True
+
         else:
             # If neither is provided, create both new
             self.browser = Browser()
