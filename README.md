@@ -72,3 +72,14 @@ cd api && python main.py
 **API:** FasAPI, Playwright, Selenium Wire, langchain, browser-use
 
 **AI Components:** Custom agent implementations, browser-use integration, smolagents class
+
+
+## Contributing
+
+Contributions are welcome!
+
+See `contributing.md` for ways to get started.
+
+Please adhere to this project's `code of conduct`.
+
+
