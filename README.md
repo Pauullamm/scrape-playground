@@ -30,7 +30,6 @@ npm run install
 ```
 pip install virtualenv
 python3 -m venv venv
-
 ```
 - on MacOS run:
 ```
@@ -39,7 +38,7 @@ source venv/bin/activate
 
 - or with Windows:
 ```
-cd env/Scripts && activate && cd ../../
+cd venv/Scripts && activate && cd ../../
 ```
 
 - Install python modules:
@@ -48,7 +47,7 @@ pip install -r requirements.txt
 ```
 ## Environment Variables
 
-To run this project, you will need to add the following environment variables to your .env file (depending on your usage)
+To run this project, you will need to add the following environment variables to your .env file(s) (depending on your usage)
 
 `OPENAI_API_KEY`
 
