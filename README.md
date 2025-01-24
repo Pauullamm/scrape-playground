@@ -17,6 +17,8 @@ Contributions are welcome!
 
 See `contributing.md` for ways to get started.
 
+things to check out: UI-TARS, smolagents smolVLM
+
 Please adhere to this project's `code of conduct`.
 
 
