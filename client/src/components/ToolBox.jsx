@@ -1,33 +1,18 @@
-import React, { useState, useEffect } from 'react';
-import { MessageSquare, Play, Code2, Network, X } from 'lucide-react';
+import React, { useState } from 'react';
+import { Code2, Network, FlaskConical } from 'lucide-react';
 
-// Tab components
 import RequestCapture from './RequestCapture';
 import BrowserAutomation from './BrowserAutomation';
 import ApiTestPage from './ApiTestPage';
-import Chat from './Chat';
 
 const tabs = [
   { id: 'requests', label: 'Background Request Capture', icon: Network },
-  { id: 'api', label: 'API Testing', icon: Play },
+  { id: 'api', label: 'API Testing', icon: FlaskConical },
   { id: 'automation', label: 'Browser Automation', icon: Code2 },
 ];
 
 export default function ToolBox() {
   const [activeTab, setActiveTab] = useState('requests');
-  const [isChatOpen, setIsChatOpen] = useState(false);
-  const [messages, setMessages] = useState(() => {
-    const savedMessages = localStorage.getItem('chatHistory');
-    return savedMessages
-      ? JSON.parse(savedMessages)
-      : [
-        {
-          message: "Hi! I'm your AI assistant. How can I help you with your testing today?",
-          direction: 'incoming',
-          position: 'single',
-        },
-      ];
-  });
 
   // State for each tab
   const [requestsState, setRequestsState] = useState({
@@ -36,9 +21,6 @@ export default function ToolBox() {
   });
   const [apiState, setApiState] = useState({});
   const [automationState, setAutomationState] = useState({});
-  useEffect(() => {
-    localStorage.setItem('chatHistory', JSON.stringify(messages));
-  }, [messages]);
 
   const renderActiveTab = () => {
     switch (activeTab) {
@@ -66,12 +48,6 @@ export default function ToolBox() {
             />
             <h2 className="text-md italic">Your Web Scraping Companion</h2>
           </div>
-          <button
-            onClick={() => setIsChatOpen(!isChatOpen)}
-            className="p-2 hover:bg-[#2A2A2A] rounded-lg transition-colors"
-          >
-            <MessageSquare size={18} />
-          </button>
         </div>
       </header>
 
@@ -101,31 +77,6 @@ export default function ToolBox() {
             <div className="bg-[#212121] h-full rounded-lg border border-[#2A2A2A] overflow-hidden">
               {renderActiveTab()}
             </div>
-          </div>
-        </div>
-
-        {/* Chat Sidebar */}
-        <div
-          className={`fixed inset-y-0 right-0 w-96 bg-[#212121] border-l border-[#2A2A2A] transform transition-transform duration-300 ${isChatOpen ? 'translate-x-0' : 'translate-x-full'
-            }`}
-        >
-          {/* Chat Header */}
-          <div className="px-4 py-2 flex items-center justify-between border-b border-[#2A2A2A]">
-            <div className="flex items-center space-x-2">
-              <MessageSquare size={18} />
-              <span className="font-medium">AI Assistant</span>
-            </div>
-            <button
-              onClick={() => setIsChatOpen(false)}
-              className="hover:text-gray-400"
-            >
-              <X size={18} />
-            </button>
-          </div>
-
-          {/* Chat Messages */}
-          <div className="h-[calc(100vh-3.5rem)] overflow-y-auto">
-            <Chat messages={messages} setMessages={setMessages} />
           </div>
         </div>
       </main>

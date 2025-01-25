@@ -4,7 +4,7 @@ import RequestRow from './RequestRow';
 
 export default function RequestCapture({ state, setState }) {
   const [url, setUrl] = useState(state.url ? state.url : '');
-  const [resources, setResources] = useState(state.resources? state.resources : []);
+  const [resources, setResources] = useState(state.resources ? state.resources : []);
   const [expandedRow, setExpandedRow] = useState(null); // Track which row is expanded
   const [filterKeyword, setFilterKeyword] = useState(''); // Filter by keyword
   const [filterMethod, setFilterMethod] = useState(''); // Filter by HTTP method
@@ -37,7 +37,7 @@ export default function RequestCapture({ state, setState }) {
       // Parse the response data from your backend
       const data = await response.json();
       if (data) {
-        
+
         setResources(data); // Assuming the backend returns an array of request_data objects
         setState({
           url: url,
@@ -76,10 +76,8 @@ export default function RequestCapture({ state, setState }) {
   return (
     <div className="h-full p-6">
       <div className="flex flex-col h-full">
-        <div className="mb-4">
-          <h2 className="text-lg font-semibold mb-2">Request Capture</h2>
-          <p className="text-gray-400">Sniff and analyze background HTTP requests.</p>
-        </div>
+        <p className="mb-2 text-gray-400 text-white text-base">Sniff and analyze background HTTP requests</p>
+        <p className="text-gray-400 text-sm mb-2">This will listen for additional resource requests made when a site is loaded and lists them out accordingly</p>
 
         <div className="mb-4">
           <div className="flex items-center">

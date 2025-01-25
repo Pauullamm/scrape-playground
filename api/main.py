@@ -101,45 +101,6 @@ async def background_capture(request: Request, message_body: MessageBody):
 
 @app.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket):
-    llm = ChatOpenAI(model="gpt-4o", api_key=os.getenv('OPENAI_API_KEY'))
-    await websocket.accept()
-    try:
-        
-        while True:
-            data = await websocket.receive_text()
-            await websocket.send_json({
-                "type": "status",
-                "data": f"Received command: {data}"
-            })
-            agent = Agent(
-                task=data,
-                llm=llm
-                
-            )
-            result = await agent.run()
-            print(agent.history)
-            serialized_history = {
-                    "history": result.model_dump()["history"],  # Use Pydantic's model_dump
-                    "metadata": {
-                        "success": result.history.is_done(),
-                        "errors": result.history.errors(),
-                        "steps": len(result.history.history),
-                        "final_result": result.history.final_result()
-                    }
-                }
-            await websocket.send_json({
-                "type": "result",
-                "data": serialized_history
-            })
-    except WebSocketDisconnect:
-        logger.info("Connection closed")
-    except Exception as e:
-        logger.error(e)
-        await websocket.send_text(f"An error occurred: {e}")
-        await websocket.close()
-
-@app.websocket("/mod_ws")
-async def mod_websocket_endpoint(websocket: WebSocket):
     if not server_active:
         await websocket.close(code=status.WS_1013_TRY_AGAIN_LATER)
         return

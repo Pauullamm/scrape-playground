@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { ArrowUp, Wifi, WifiOff } from 'lucide-react'
 
 export default function BrowserAutomation() {
   const [prompt, setPrompt] = useState('');
@@ -19,7 +20,7 @@ export default function BrowserAutomation() {
     }
 
     // Connect to WebSocket
-    ws.current = new WebSocket('ws://127.0.0.1:5000/mod_ws');
+    ws.current = new WebSocket('ws://127.0.0.1:5000/ws');
 
     ws.current.onopen = () => {
       setStatus('Connected - Ready for commands');
@@ -119,16 +120,19 @@ export default function BrowserAutomation() {
             {ws.current && ws.current.readyState === WebSocket.OPEN ? (
               <button
                 onClick={disconnectWebSocket}
-                className="bg-red-600 hover:bg-red-700 px-4 py-2 rounded-lg text-white transition-colors"
+                className=" flex opacity-70 bg-red-600 hover:bg-red-700 px-4 py-2 rounded-lg text-white transition-colors"
               >
-                Disconnect
+                <p>Disconnect</p>
+                <WifiOff />
               </button>
             ) : (
               <button
                 onClick={connectWebSocket}
-                className="bg-green-600 hover:bg-green-700 px-4 py-2 rounded-lg text-white transition-colors"
+                placeholder="Connect"
+                className="flex opacity-90 bg-green-700 hover:bg-green-500 px-4 py-2 rounded-lg text-white transition-colors"
               >
-                Connect
+                <p>Connect</p>
+                <Wifi style={{ "margin-left": "calc(var(--spacing) * 1" }} />
               </button>
             )}
           </div>
@@ -167,21 +171,26 @@ export default function BrowserAutomation() {
         </div>
 
         <div className="mt-4 flex gap-2">
-          <input
+          <textarea
             type="text"
             value={prompt}
             onChange={(e) => setPrompt(e.target.value)}
-            onKeyPress={(e) => e.key === 'Enter' && sendPrompt()}
-            placeholder="Enter command for AI agent..."
-            className="flex-1 bg-[#2A2A2A] rounded-lg px-4 py-2 text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            onSubmit={sendPrompt}
+            style={{
+              resize: 'none'
+            }}
+            placeholder='Enter instructions for AI browser agent'
+            className="flex-1 bg-[#2A2A2A] placeholder-opacity-50 rounded-lg px-4 py-2 text-gray-100 focus:outline-none"
           />
-          <button
-            onClick={sendPrompt}
-            className="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg text-white transition-colors disabled:opacity-50"
-            disabled={!prompt.trim()}
-          >
-            Execute
-          </button>
+          <div className='flex items-center'>
+            <button
+              onClick={sendPrompt}
+              className="bg-gray-700 hover:bg-gray-600 px-4 py-2 rounded-full text-white transition-colors disabled:opacity-50"
+              disabled={!prompt.trim()}
+            >
+              <ArrowUp />
+            </button>
+          </div>
         </div>
       </div>
     </div>
