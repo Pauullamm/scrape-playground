@@ -53,11 +53,14 @@ pip install -r requirements.txt
 
 ## Environment Variables
 
-To run this project, you will need to add the following environment variables to your .env file (depending on your usage)
+To run this project, you will need to add the following environment variables to your .env file(s) (depending on your usage)
 
 `OPENAI_API_KEY=your_openai_api_key`
 
 `DEEPSEEK_API_KEY=your_deepseek_api_key`
+
+`REACT_APP_OPENAI_API_KEY=your_openai_api_key`
+
 ## Running the Application
 Start both services simultaneously in separate terminals:
 ```bash

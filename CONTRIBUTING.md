@@ -10,7 +10,9 @@ We welcome all types of contributions! Here's how to get started:
 4. Create a feature branch: `git checkout -b feat/your-feature`
 
 ## Development Guidelines 📝
-
+- Try to periodically pull from the repo to check for changes
+- Try to avoid making large changes each time (commit often)
+- Make sure your branch/pull request is focused on a particular task/bug
 
 ### Pull Request Process
 1. Ensure all tests pass
