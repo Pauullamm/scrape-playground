@@ -4,16 +4,18 @@ from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 import uvicorn
-from Agents import OpenAIAgent, DeepSeekAgent
+from Terrier_Agents import DeepSeekAgent
 from prompt import agent_prompt, CODE_SYSTEM_PROMPT
-from Tools import *
+from Tools import regex_parse, get_resource, scrape_background_requests, actions
 from load_dotenv import load_dotenv
 import os
 import logging
 from langchain_openai import ChatOpenAI
-from browser_use import Agent
 from modAgent import modAgent
 from modController import modController
+from browser_use import ActionResult
+import re
+import json5
 
 logger = logging.getLogger(__name__)
 server_active = True
@@ -40,6 +42,8 @@ class MessageBody(BaseModel):
 
 class ResponseBody(BaseModel):
     response: str
+
+
 
 async def validate_api_key(websocket: WebSocket):
     api_key = websocket.headers.get("x-api-key") or websocket.query_params.get("api_key")
@@ -76,23 +80,15 @@ async def generate_response(request: Request, message_body: MessageBody):
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.post("/background_capture")
-async def background_capture(request: Request, message_body: MessageBody):
+def background_capture(message_body: MessageBody):
     try:
-        if request.method == "OPTIONS":
-            return JSONResponse(
-                content={"message": "OK"},
-                headers={
-                    "Access-Control-Allow-Origin": ",".join(origins),
-                    "Access-Control-Allow-Methods": "POST, OPTIONS",
-                    "Access-Control-Allow-Headers": "Content-Type",
-                },
-            )
         data = scrape_background_requests(message_body.message)
+        # logger.info(data)
         return JSONResponse(
-            content=jsonable_encoder(data),
-            headers={"Access-Control-Allow-Origin": ",".join(origins)}
+            content=jsonable_encoder(data)
         )    
     except Exception as e:
+        logger.info(str(e))
         return JSONResponse(
             content={"error": str(e)},
             status_code=500,
@@ -105,6 +101,9 @@ async def websocket_endpoint(websocket: WebSocket):
         await websocket.close(code=status.WS_1013_TRY_AGAIN_LATER)
         return
     llm = ChatOpenAI(model="gpt-4o", api_key=os.getenv('OPENAI_API_KEY'))
+    # I don't think deepseek has vision capabilities yet
+    #llm = ChatOpenAI(base_url="https://api.deepseek.com/v1", model="deepseek-chat", api_key=os.getenv('DEEPSEEK_API_KEY'))
+    
     await websocket.accept()
     try:
         
@@ -114,6 +113,13 @@ async def websocket_endpoint(websocket: WebSocket):
                 "type": "status",
                 "data": f"Received command: {data}"
             })
+            # introduce new action to controller - TESTING
+            # @modController.action("capture background requests from browser")
+            # def controller_scrape_background_requests(url_query: str):
+            #     background_data = scrape_background_requests(url_query)
+            #     json_background_data = jsonable_encoder(background_data)
+            #     return ActionResult(extracted_content=json_background_data)
+
             agent = modAgent(
                 task=data,
                 llm=llm,

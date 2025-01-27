@@ -59,3 +59,14 @@
   input:checked + .slider:before {
     transform: translateX(0.95em);
   }
+
+  /* In your global CSS */
+.json-pre {
+  white-space: pre-wrap !important;
+  word-break: break-word !important;
+  font-family: monospace !important;
+  font-size: 0.875rem !important;
+  background: #2d2d2d !important;
+  padding: 0.5rem !important;
+  border-radius: 0.25rem !important;
+}

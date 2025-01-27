@@ -2,7 +2,7 @@ import requests
 from bs4 import BeautifulSoup
 import requests.cookies
 from utils import ScraperTool
-from cdp.cookiegetter import cookiegetter
+from cookiegetter import cookiegetter
 import re
 import asyncio
 
@@ -10,8 +10,11 @@ url_pattern = r'^(https?|ftp):\/\/[^\s/$.?#].[^\s]*$'
 json_regex = r"^https?:\/\/[^\s]*\.json(?:\?[^\s]*)?$"
 
 def get_resource(link):
+    '''
+    Retrieves the resource at the specified link
+    '''
     if re.match(url_pattern, link):
-        cookie_list = asyncio.run(cookiegetter(link))
+        cookie_list = cookiegetter(link)
     headers = {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/118.0.0.0 Safari/537.36",
         "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
@@ -25,12 +28,11 @@ def get_resource(link):
     cookies = {cookie['name']: cookie['value'] for cookie in cookie_list}
 
     res = requests.get(url=link, headers=headers, cookies=cookies)
-    if re.match(json_regex, link):
-        return res.json()
-    else:
-        return res.text.strip()
-
-# print(get_resource("https://www.jdsports.co.uk/"))
+    # if re.match(json_regex, link):
+    #     return res.json()
+    # else:
+    #     return res.text.strip()
+    return res.text.strip()
 
 def scrape(url):
     '''
@@ -40,12 +42,24 @@ def scrape(url):
     base_page_data = scraper.parse_html(scraper.get(url))
     return base_page_data
 
+def regex_parse(html, regex):
+    '''
+    Parses html using a regex pattern
+    '''
+    return re.findall(regex, html)
 def scrape_background_requests(url):
+    '''
+    Retrieves all background requests made by the page at the specified url
+    Parses/filters responses to obtain relevant data (e.g. json/javascript variables with json content) 
+    '''
     scraper = ScraperTool()
-    background_request_data = scraper.capture_har_wire(url)
+    background_request_data = scraper.capture_bg_responses(url)
     return background_request_data
 
 def take_screenshot(url):
+    '''
+    Takes a screenshot of the page at the specified url
+    '''
     scraper = ScraperTool()
     return scraper.take_screenshot(url)
 

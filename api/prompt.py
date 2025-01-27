@@ -1,3 +1,4 @@
+#PRIMARY PROMPT USED FOR CUSTOM TERRIER AGENTS
 agent_prompt = """
 You run in a loop of Thought, Action, PAUSE, Observation.
 At the end of the loop you output an Answer.
@@ -334,6 +335,7 @@ Here are the rules you should always follow to solve your task:
 Now Begin! If you solve the task correctly, you will receive a reward of $1,000,000.
 """.strip()
 
+# TEST PROMPTS
 scraper_prompt = """
 You run in a loop of Thought, Action, PAUSE, Observation.
 At the end of the loop you output an Answer.

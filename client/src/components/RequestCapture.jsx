@@ -11,6 +11,7 @@ export default function RequestCapture({ state, setState }) {
   const [sortBy, setSortBy] = useState('method'); // Sort by method, URL, or status
   const [sortOrder, setSortOrder] = useState('asc'); // Sort order (asc or desc)
   const [loading, setLoading] = useState(false)
+  const [resourceError, setResourceError] = useState('');
 
   const BACKEND_URL = "http://127.0.0.1:5000";
   const keys = useSelector((state) => state.settings);
@@ -31,6 +32,7 @@ export default function RequestCapture({ state, setState }) {
       });
 
       if (!response.ok) {
+        setResourceError(response.status);
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
 
@@ -187,7 +189,7 @@ export default function RequestCapture({ state, setState }) {
             </table>
           ) : (
             <pre className="text-sm text-gray-300">
-              <code>// No matching requests found</code>
+              {resourceError ? <code>// Server Error</code> : <code>// No matching requests found</code>}
             </pre>
           )}
         </div>
