@@ -9,6 +9,131 @@ import re
 import logging
 from json5 import loads as json5_loads
 
+RELEVANT_RESOURCE_TYPES = {
+            'document',
+            'stylesheet',
+            'image',
+            'font',
+            'script',
+            'iframe',
+            'xhr'
+        }
+
+RELEVANT_CONTENT_TYPES = {
+            'text/html',
+            'text/css',
+            'application/javascript',
+            'image/',
+            'font/',
+            'application/json',
+            'json'
+        }
+
+        # Additional patterns to filter out
+IGNORED_URL_PATTERNS = {
+            # Analytics and tracking
+            'analytics',
+            'tracking',
+            'telemetry',
+            'beacon',
+            'metrics',
+            # Ad-related
+            'doubleclick',
+            'adsystem',
+            'adserver',
+            'advertising',
+            # Social media widgets
+            'facebook.com/plugins',
+            'platform.twitter',
+            'linkedin.com/embed',
+            # Live chat and support
+            'livechat',
+            'zendesk',
+            'intercom',
+            'crisp.chat',
+            'hotjar',
+            # Push notifications
+            'push-notifications',
+            'onesignal',
+            'pushwoosh',
+            # Background sync/heartbeat
+            'heartbeat',
+            'ping',
+            'alive',
+            # WebRTC and streaming
+            'webrtc',
+            'rtmp://',
+            'wss://',
+            # Common CDNs for dynamic content
+            'cloudfront.net',
+            'fastly.net',
+}
+
+        
+def infer_resource_type(request):
+    """Infer resource type using Content-Type and URL patterns"""
+    content_type = (request.response.headers.get('Content-Type', '') 
+                    if request.response else '').lower()
+    url = request.url.lower()
+
+    # First check by Content-Type
+    if 'text/html' in content_type:
+        return 'document'
+    elif 'text/css' in content_type:
+        return 'stylesheet'
+    elif 'javascript' in content_type:
+        return 'script'
+    elif 'image/' in content_type:
+        return 'image'
+    elif 'font/' in content_type or 'otf' in content_type or 'ttf' in content_type:
+        return 'font'
+    elif 'json' in content_type:
+        return 'xhr'
+
+    # Fallback to URL patterns if Content-Type is missing/unreliable
+    if any(url.endswith(ext) for ext in ('.js', '.mjs')):
+        return 'script'
+    elif any(url.endswith(ext) for ext in ('.css', '.scss', '.less')):
+        return 'stylesheet'
+    elif any(url.endswith(ext) for ext in ('.png', '.jpg', '.jpeg', '.gif', '.webp')):
+        return 'image'
+    elif any(url.endswith(ext) for ext in ('.woff', '.woff2', '.ttf', '.otf', '.eot')):
+        return 'font'
+    elif '/api/' in url or 'json' in url:
+        return 'xhr'
+    
+    return 'other'
+def filter_request(request):
+    resource_type = infer_resource_type(request)
+    if resource_type not in RELEVANT_RESOURCE_TYPES:
+        return None
+    # Filter out by URL patterns
+    url = request.url.lower()
+    if any(pattern in url for pattern in IGNORED_URL_PATTERNS):
+        return None
+
+    # Filter out data URLs and blob URLs
+    if url.startswith(('data:', 'blob:')):
+        return None
+
+    # Filter out requests with certain headers
+    headers = request.headers
+    if headers.get('purpose') == 'prefetch' or headers.get('sec-fetch-dest') in [
+        'video',
+        'audio',
+    ]:
+        return None
+    
+    if not request.response:
+        return None  # skip requests without a response
+    
+    # Filter by content type
+    content_type = request.response.headers.get('Content-Type', '').lower()
+    if not any(ct in content_type for ct in RELEVANT_CONTENT_TYPES):
+        return None
+                        
+    return request
+
 class ScraperTool:
     def __init__(self):
         """
@@ -33,20 +158,11 @@ class ScraperTool:
         self.chrome_options.add_argument("--disable-http2")
         self.chrome_options.add_argument('--disable-search-engine-choice-screen')
         self.chrome_options.set_capability('pageLoadStrategy', 'eager')  # Don't wait for full load
-        self.chrome_options.add_argument('--disable-software-rasterizer')
-        self.chrome_options.add_argument('--disable-features=NetworkService')
+        # self.chrome_options.add_argument('--disable-software-rasterizer')
+        # self.chrome_options.add_argument('--disable-features=NetworkService')
         #ChromeDriver is just AWFUL because every version or two it breaks unless you pass cryptic arguments
         #AGRESSIVE: options.setPageLoadStrategy(PageLoadStrategy.NONE); // https://www.skptricks.com/2018/08/timed-out-receiving-message-from-renderer-selenium.html
 
-    def regex_parse(self, pattern: str, text: str):
-        """
-        Parses the text using the specified regex pattern.
-
-        :param pattern: The regex pattern to use.
-        :param text: The text to parse.
-        :return: The parsed text.
-        """
-        return re.findall(pattern, text)
     def test_proxy(self, url: str):
         """
         Tests the proxy connection by sending a GET request to a test URL.
@@ -138,8 +254,8 @@ class ScraperTool:
             options=self.chrome_options,
             seleniumwire_options={
                 'disable_encoding': True,
-                'suppress_connection_errors': True,
                 'connection_timeout': 60,
+                'ignore_http_methods': [],
                 'exclude_hosts': ['google-analytics.com', 'www.google-analytics.com', 'www.googletagmanager.com', 'doubleclick.net'],
                 }
             )
@@ -148,6 +264,7 @@ class ScraperTool:
         WebDriverWait(driver, 30).until(
             lambda d: d.execute_script('return document.readyState') == 'complete'
         )
+        time.sleep(3)
         def scroll(driver):
             for _ in range(0, 6):
                 driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
@@ -177,126 +294,6 @@ class ScraperTool:
             # Default: return the object as is
             return obj
 
-        RELEVANT_RESOURCE_TYPES = {
-            'document',
-            'stylesheet',
-            'image',
-            'font',
-            'script',
-            'iframe',
-        }
-
-        RELEVANT_CONTENT_TYPES = {
-            'text/html',
-            'text/css',
-            'application/javascript',
-            'image/',
-            'font/',
-            'application/json',
-        }
-
-        # Additional patterns to filter out
-        IGNORED_URL_PATTERNS = {
-            # Analytics and tracking
-            'analytics',
-            'tracking',
-            'telemetry',
-            'beacon',
-            'metrics',
-            # Ad-related
-            'doubleclick',
-            'adsystem',
-            'adserver',
-            'advertising',
-            # Social media widgets
-            'facebook.com/plugins',
-            'platform.twitter',
-            'linkedin.com/embed',
-            # Live chat and support
-            'livechat',
-            'zendesk',
-            'intercom',
-            'crisp.chat',
-            'hotjar',
-            # Push notifications
-            'push-notifications',
-            'onesignal',
-            'pushwoosh',
-            # Background sync/heartbeat
-            'heartbeat',
-            'ping',
-            'alive',
-            # WebRTC and streaming
-            'webrtc',
-            'rtmp://',
-            'wss://',
-            # Common CDNs for dynamic content
-            'cloudfront.net',
-            'fastly.net',
-        }
-        def infer_resource_type(request):
-            """Infer resource type using Content-Type and URL patterns"""
-            content_type = (request.response.headers.get('Content-Type', '') 
-                            if request.response else '').lower()
-            url = request.url.lower()
-
-            # First check by Content-Type
-            if 'text/html' in content_type:
-                return 'document'
-            elif 'text/css' in content_type:
-                return 'stylesheet'
-            elif 'javascript' in content_type:
-                return 'script'
-            elif 'image/' in content_type:
-                return 'image'
-            elif 'font/' in content_type or 'otf' in content_type or 'ttf' in content_type:
-                return 'font'
-            elif 'json' in content_type:
-                return 'xhr'
-
-            # Fallback to URL patterns if Content-Type is missing/unreliable
-            if any(url.endswith(ext) for ext in ('.js', '.mjs')):
-                return 'script'
-            elif any(url.endswith(ext) for ext in ('.css', '.scss', '.less')):
-                return 'stylesheet'
-            elif any(url.endswith(ext) for ext in ('.png', '.jpg', '.jpeg', '.gif', '.webp')):
-                return 'image'
-            elif any(url.endswith(ext) for ext in ('.woff', '.woff2', '.ttf', '.otf', '.eot')):
-                return 'font'
-            elif '/api/' in url or 'json' in url:
-                return 'xhr'
-            
-            return 'other'
-        def filter_request(request):
-            resource_type = infer_resource_type(request)
-            if resource_type not in RELEVANT_RESOURCE_TYPES:
-                return None
-            # Filter out by URL patterns
-            url = request.url.lower()
-            if any(pattern in url for pattern in IGNORED_URL_PATTERNS):
-                return None
-
-            # Filter out data URLs and blob URLs
-            if url.startswith(('data:', 'blob:')):
-                return None
-
-            # Filter out requests with certain headers
-            headers = request.headers
-            if headers.get('purpose') == 'prefetch' or headers.get('sec-fetch-dest') in [
-                'video',
-                'audio',
-            ]:
-                return None
-            
-            if not request.response:
-                return None  # skip requests without a response
-            
-            # Filter by content type
-            content_type = request.response.headers.get('Content-Type', '').lower()
-            if not any(ct in content_type for ct in RELEVANT_CONTENT_TYPES):
-                return None
-                                
-            return request
         for request in driver.requests:
             filtered_request = filter_request(request)
             if not filtered_request:
@@ -313,7 +310,7 @@ class ScraperTool:
             if filtered_request.response:
                 url = request.url.lower()
                 content_type = filtered_request.response.headers.get('Content-Type', '').lower()
-                if any(ext in content_type or ext in url for ext in ['css', 'jpg', 'png', 'font', 'html', 'octet-stream', 'binary']):
+                if any(ext in content_type or ext in url for ext in ['css', 'jpg', 'png', 'font', 'html']):
                     continue
                 response_body = decode(
                     filtered_request.response.body, 
