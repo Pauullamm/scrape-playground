@@ -32,7 +32,6 @@ npm install
 ```
 **API/Server Setup:**
 ```bash
-pip install virtualenv
 python3 -m venv venv
 ```
 - on MacOS run:
