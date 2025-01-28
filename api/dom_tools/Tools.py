@@ -1,8 +1,8 @@
 import requests
 from bs4 import BeautifulSoup
 import requests.cookies
-from utils import ScraperTool
-from cookiegetter import cookiegetter
+from api.server_tools.utils import ScraperTool
+from api.server_tools.cookiegetter import cookiegetter
 import re
 import asyncio
 

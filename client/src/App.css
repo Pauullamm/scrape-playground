@@ -70,3 +70,14 @@
   padding: 0.5rem !important;
   border-radius: 0.25rem !important;
 }
+
+
+html {
+  overflow: hidden;
+  height: 100%;
+}
+
+body {
+  overflow: auto;
+  height: 100%;
+}

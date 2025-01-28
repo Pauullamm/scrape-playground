@@ -1,30 +1,33 @@
-import { Globe2, Settings, Database, FlaskConical } from 'lucide-react';
-import { Link } from 'react-router';
-
+import { Globe2, Settings, Database } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 export default function Navbar() {
     return (
-        <nav className="border-b border-gray-700 bg-gray-800/50 backdrop-blur-sm">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="flex items-center justify-between h-16">
-                    <Link to={'/'}>
-                        <div className="flex items-center">
-                            <Globe2 className="w-8 h-8 text-blue-400" />
-                            <span className="ml-2 text-xl font-bold">WebScrape Dashboard</span>
-                        </div>
-                    </Link>
-                    <div className="flex items-center space-x-4">
-                        <Link to={'/settings'}>
-                            <button className="p-2 rounded-lg hover:bg-gray-700">
-                                <Settings className="w-5 h-5" />
-                            </button>
-                        </Link>
-                        <button className="p-2 rounded-lg hover:bg-gray-700">
-                            <Database className="w-5 h-5" />
+        <header className="h-16 border-b border-[#2A2A2A] p-4 sticky top-0 bg-[#1A1A1A]/90 backdrop-blur-sm z-50">
+            <div className="max-w-7xl mx-auto flex items-center justify-between">
+                {/* Left side - Branding */}
+                <Link to="/" className="flex items-center gap-1 hover:opacity-80 transition-opacity">
+                    <h1 className="text-3xl font-extrabold">Terrier</h1>
+                    <img
+                        src='white-dog-logo.png'
+                        className="h-8 w-8 ml-1"
+                        alt="Terrier logo"
+                    />
+                    <h2 className="sm:block hidden text-md italic ml-2 ">Your Web Scraping Companion</h2>
+                </Link>
+
+                {/* Right side - Navigation */}
+                <div className="flex items-center space-x-4">
+                    <Link to="/settings">
+                        <button className="p-2 rounded-lg hover:bg-[#2A2A2A] transition-colors">
+                            <Settings className="w-5 h-5" />
                         </button>
-                    </div>
+                    </Link>
+                    <button className="p-2 rounded-lg hover:bg-[#2A2A2A] transition-colors">
+                        <Database className="w-5 h-5" />
+                    </button>
                 </div>
             </div>
-        </nav>
+        </header>
     )
 }

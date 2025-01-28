@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Send, Plus, Trash2, ChevronDown, ChevronUp } from 'lucide-react';
-import '../App.css'
+// import '../App.css'
 
 export default function ApiTestPage({ state, setState }) {
     const [url, setUrl] = useState(state.url ? state.url : '');
@@ -125,7 +125,7 @@ export default function ApiTestPage({ state, setState }) {
     return (
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
             <div className="space-y-6" style={{overflowY: 'auto'}}>
-                <div className="flex gap-4">
+                <div className="flex gap-2">
                     <select
                         value={method}
                         onChange={(e) => setMethod(e.target.value)}
@@ -140,15 +140,15 @@ export default function ApiTestPage({ state, setState }) {
                         value={url}
                         onChange={(e) => setUrl(e.target.value)}
                         placeholder="Enter API URL"
-                        className="flex-1 bg-gray-700 text-white my-1 px-4 py-2 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none min-w-0"
+                        className="flex-1 bg-[#1A1A1A] text-white my-1 px-4 py-2 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none min-w-0"
                     />
                     <button
                         onClick={handleSubmit}
                         disabled={loading}
-                        className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-lg flex items-center gap-2 disabled:opacity-50"
+                        className="bg-blue-900 hover:bg-gray-600 text-white text-sm px-4 py-1 rounded-lg flex items-center gap-2 disabled:opacity-50"
                     >
                         {loading ? 'Sending...' : 'Send'}
-                        <Send className="w-4 h-4" />
+                        <Send className="w-3 h-3" />
                     </button>
                 </div>
 

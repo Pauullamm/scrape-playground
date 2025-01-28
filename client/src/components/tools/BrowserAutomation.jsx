@@ -120,7 +120,7 @@ export default function BrowserAutomation() {
             {ws.current && ws.current.readyState === WebSocket.OPEN ? (
               <button
                 onClick={disconnectWebSocket}
-                className=" flex opacity-70 bg-red-600 hover:bg-red-700 px-4 py-2 rounded-lg text-white transition-colors"
+                className=" flex opacity-70 bg-red-600 hover:bg-red-700 px-4 py-2 gap-2 rounded-lg text-white transition-colors"
               >
                 <p>Disconnect</p>
                 <WifiOff />
@@ -129,7 +129,7 @@ export default function BrowserAutomation() {
               <button
                 onClick={connectWebSocket}
                 placeholder="Connect"
-                className="flex opacity-90 bg-green-700 hover:bg-green-500 px-4 py-2 rounded-lg text-white transition-colors"
+                className="flex opacity-90 bg-green-700 hover:bg-green-500 px-4 py-2 gap-2 rounded-lg text-white transition-colors"
               >
                 <p>Connect</p>
                 <Wifi style={{ "margin-left": "calc(var(--spacing) * 1" }} />
@@ -180,7 +180,7 @@ export default function BrowserAutomation() {
               resize: 'none'
             }}
             placeholder='Enter instructions for AI browser agent'
-            className="flex-1 bg-[#2A2A2A] placeholder-opacity-50 rounded-lg px-4 py-2 text-gray-100 focus:outline-none"
+            className="flex-1 items-center bg-[#2A2A2A] text-sm placeholder-opacity-50 rounded-lg px-4 py-2 text-gray-100 focus:outline-none"
           />
           <div className='flex items-center'>
             <button

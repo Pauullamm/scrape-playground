@@ -4,18 +4,19 @@ from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 import uvicorn
-from Terrier_Agents import DeepSeekAgent
-from prompt import agent_prompt, CODE_SYSTEM_PROMPT
-from Tools import regex_parse, get_resource, scrape_background_requests, actions
+from api.dom_tools.Terrier_Agents import DeepSeekAgent
+from api.dom_tools.prompt import agent_prompt, CODE_SYSTEM_PROMPT
+from api.dom_tools.Tools import regex_parse, get_resource, scrape_background_requests, actions
 from load_dotenv import load_dotenv
 import os
 import logging
 from langchain_openai import ChatOpenAI
-from modAgent import modAgent
-from modController import modController
+from api.dom_tools.modAgent import modAgent
+from api.dom_tools.modController import modController
 from browser_use import ActionResult
 import re
 import json5
+from api.dom_tools.Test import HTMLParser
 
 logger = logging.getLogger(__name__)
 server_active = True
@@ -82,10 +83,14 @@ async def generate_response(request: Request, message_body: MessageBody):
 @app.post("/background_capture")
 def background_capture(message_body: MessageBody):
     try:
-        data = scrape_background_requests(message_body.message)
+        # testing new feature
+        front_parser = HTMLParser(message_body.message)
+        front_data = front_parser.extract_json()
+        # -------------------------------
+        back_data = scrape_background_requests(message_body.message)
         # logger.info(data)
         return JSONResponse(
-            content=jsonable_encoder(data)
+            content=jsonable_encoder(front_data + back_data)
         )    
     except Exception as e:
         logger.info(str(e))

@@ -39,11 +39,22 @@ export default function RequestCapture({ state, setState }) {
       // Parse the response data from your backend
       const data = await response.json();
       if (data) {
-
-        setResources(data); // Assuming the backend returns an array of request_data objects
+        console.log(data)
+        const row_data = []
+        for (let i=0; i < data.length; i++) {
+          var item = data[i]
+          if (item.content === 'root') {
+            continue
+          } else {
+            row_data.push(item)
+          }
+          
+        }
+        setResources(row_data); // Assuming the backend returns an array of request_data objects
+        
         setState({
           url: url,
-          resources: data
+          resources: row_data
         })
         setLoading(false);
       } else {
@@ -132,12 +143,12 @@ export default function RequestCapture({ state, setState }) {
             value={filterKeyword}
             onChange={(e) => setFilterKeyword(e.target.value)}
             placeholder="Filter by keyword"
-            className="flex-1 bg-[#1A1A1A] rounded-lg border border-[#2A2A2A] p-2 text-gray-300 placeholder-gray-500 focus:outline-none focus:border-[#3A3A3A]"
+            className="flex-1 bg-[#1A1A1A] rounded-lg text-xs border border-[#2A2A2A] p-2 text-gray-300 placeholder-gray-500 focus:outline-none focus:border-[#3A3A3A]"
           />
           <select
             value={filterMethod}
             onChange={(e) => setFilterMethod(e.target.value)}
-            className="bg-[#1A1A1A] rounded-lg border border-[#2A2A2A] p-2 text-gray-300 focus:outline-none focus:border-[#3A3A3A] min-w-0"
+            className="bg-[#1A1A1A] rounded-lg text-xs border border-[#2A2A2A] p-2 text-gray-300 focus:outline-none focus:border-[#3A3A3A] min-w-0"
           >
             <option value="">All Methods</option>
             <option value="GET">GET</option>
@@ -148,7 +159,7 @@ export default function RequestCapture({ state, setState }) {
           <select
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value)}
-            className="bg-[#1A1A1A] rounded-lg border border-[#2A2A2A] p-2 text-gray-300 focus:outline-none focus:border-[#3A3A3A] min-w-0"
+            className="bg-[#1A1A1A] rounded-lg text-xs border border-[#2A2A2A] p-2 text-gray-300 focus:outline-none focus:border-[#3A3A3A] min-w-0"
           >
             <option value="method">Sort by Method</option>
             <option value="url">Sort by URL</option>
@@ -157,7 +168,7 @@ export default function RequestCapture({ state, setState }) {
           <select
             value={sortOrder}
             onChange={(e) => setSortOrder(e.target.value)}
-            className="bg-[#1A1A1A] rounded-lg border border-[#2A2A2A] p-2 text-gray-300 focus:outline-none focus:border-[#3A3A3A] min-w-0"
+            className="bg-[#1A1A1A] rounded-lg text-xs border border-[#2A2A2A] p-1 text-gray-300 focus:outline-none focus:border-[#3A3A3A] min-w-0"
           >
             <option value="asc">Ascending</option>
             <option value="desc">Descending</option>

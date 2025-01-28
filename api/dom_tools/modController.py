@@ -20,7 +20,7 @@ from browser_use.controller.views import (
 	SwitchTabAction,
 )
 from browser_use.utils import time_execution_async, time_execution_sync
-from utils import ScraperTool
+from api.server_tools.utils import ScraperTool
 
 logger = logging.getLogger(__name__)
 

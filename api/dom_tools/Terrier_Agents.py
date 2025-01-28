@@ -1,7 +1,7 @@
 import re, traceback
-from prompt import agent_prompt, CODE_SYSTEM_PROMPT
+from api.dom_tools.prompt import agent_prompt, CODE_SYSTEM_PROMPT
 from openai import OpenAI, RateLimitError
-from Tools import actions
+from api.dom_tools.Tools import actions
 import os
 from load_dotenv import load_dotenv
 from ollama import chat, ChatResponse

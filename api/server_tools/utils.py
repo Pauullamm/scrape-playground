@@ -236,7 +236,7 @@ class ScraperTool:
         soup = BeautifulSoup(html, 'html.parser')
         return soup.prettify()
     
-    def capture_bg_responses(self, url: str, view_links: bool=True) -> None:
+    def capture_bg_responses(self, url: str, view_links: bool=True) -> list:
         '''
         method which captures network activity between the client and the server
         uses seleniumwire webdriver instead of standard selenium
