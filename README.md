@@ -16,11 +16,15 @@ Terrier AI combines web scraping tools with AI agents to simplify data extractio
 - Built on [browser-use](https://browser-use.com/) for intelligent DOM interaction
 - Automatic retry and error recovery mechanisms
 
+### (New!) 📄 HTML-JSON Extraction
+- Parsing of browser HTML to look for json-like content
+- Work in Progress
+
 ## Getting Started 🚀
 
 ### Prerequisites
 - Node.js v16+
-- Python 3.9+
+- Python 3.13+
 - Chrome/Firefox browsers
 
 ### Installation
