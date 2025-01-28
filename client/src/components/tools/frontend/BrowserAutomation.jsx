@@ -180,7 +180,7 @@ export default function BrowserAutomation() {
               resize: 'none'
             }}
             placeholder='Enter instructions for AI browser agent'
-            className="flex-1 items-center bg-[#2A2A2A] text-sm placeholder-opacity-50 rounded-lg px-4 py-2 text-gray-100 focus:outline-none"
+            className="flex-1 bg-[#2A2A2A] text-sm align-middle placeholder-opacity-50 rounded-lg px-4 py-2 text-gray-100 focus:outline-none"
           />
           <div className='flex items-center'>
             <button

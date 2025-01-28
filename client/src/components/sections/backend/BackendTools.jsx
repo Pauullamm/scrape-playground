@@ -1,8 +1,8 @@
 // BackendTools.jsx
 import { useState } from 'react';
 import { Network, FlaskConical } from 'lucide-react';
-import RequestCapture from '../../tools/RequestCapture';
-import ApiTestPage from '../../tools/ApiTestPage';
+import RequestCapture from '../../tools/backend/RequestCapture';
+import ApiTestPage from '../../tools/backend/ApiTestPage';
 
 const tabs = [
   { id: 'requests', label: 'Request Capture', icon: Network },

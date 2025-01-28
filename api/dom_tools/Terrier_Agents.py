@@ -1,12 +1,6 @@
 import re, traceback
-from api.dom_tools.prompt import agent_prompt, CODE_SYSTEM_PROMPT
 from openai import OpenAI, RateLimitError
-from api.dom_tools.Tools import actions
-import os
-from load_dotenv import load_dotenv
 from ollama import chat, ChatResponse
-
-load_dotenv()
 
 class OpenAIAgent:
     def __init__(self, 
@@ -226,19 +220,3 @@ class ChunkingAgent:
     """
     def __init__(self):
         pass
-
-
-#UNCOMMENT BELOW FOR TESTING -----------------------------------------------
-# print(query("Does this page have any captchas? - https://www.google.co.uk/"))
-# print(query("Identify any resource links on this site: https://products.mhra.gov.uk/"))
-# agent = OpenAIAgent(prompt=agent_prompt, tools=actions, api_key=os.getenv('OPENAI_API_KEY'))
-# # agent = OllamaAgent(prompt=prompt, tools=known_actions)
-# agent = DeepSeekAgent(prompt=CODE_SYSTEM_PROMPT, tools=actions, api_key=os.getenv('DEEPSEEK_API_KEY'))
-# agent.reset_session()
-# agent.query("Identify any background resource links on this site: https://products.mhra.gov.uk/substance/?substance=ABACAVIR")
-# agent.reset_session()
-# with open("messages.json", 'w') as f:
-#     json.dump(agent.messages, f, indent=4)
-
-# agent.reset_session()
-

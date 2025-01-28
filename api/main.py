@@ -4,19 +4,19 @@ from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 import uvicorn
-from api.dom_tools.Terrier_Agents import DeepSeekAgent
-from api.dom_tools.prompt import agent_prompt, CODE_SYSTEM_PROMPT
-from api.dom_tools.Tools import regex_parse, get_resource, scrape_background_requests, actions
+from dom_tools.Terrier_Agents import DeepSeekAgent
+from dom_tools.prompt import agent_prompt, CODE_SYSTEM_PROMPT
+from dom_tools.Tools import regex_parse, get_resource, scrape_background_requests, actions
 from load_dotenv import load_dotenv
 import os
 import logging
 from langchain_openai import ChatOpenAI
-from api.dom_tools.modAgent import modAgent
-from api.dom_tools.modController import modController
+from dom_tools.modAgent import modAgent
+from dom_tools.modController import modController
 from browser_use import ActionResult
 import re
 import json5
-from api.dom_tools.Test import HTMLParser
+from dom_tools.Test import HTMLParser
 
 logger = logging.getLogger(__name__)
 server_active = True
@@ -80,17 +80,38 @@ async def generate_response(request: Request, message_body: MessageBody):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-@app.post("/background_capture")
-def background_capture(message_body: MessageBody):
+@app.post("/foreground_parse")
+def foreground_parse(message_body: MessageBody):
+    '''
+    This endpoint allows the user to parse html to look for json-like content embedded in the frontend DOM
+    it receives a url and the html content is requested to be parsed
+    '''
     try:
-        # testing new feature
         front_parser = HTMLParser(message_body.message)
         front_data = front_parser.extract_json()
-        # -------------------------------
+        return JSONResponse(
+            content=jsonable_encoder(front_data)
+        )
+    except Exception as e:
+        logger.info(f'Error parsing frontend HTML: {str(e)}')
+        return JSONResponse(
+            content={"error": str(e)},
+            status_code=500,
+            headers={"Access-Control-Allow-Origin": ",".join(origins)}
+        )
+        
+@app.post("/background_capture")
+def background_capture(message_body: MessageBody):
+    '''
+    This endpoint allows the user to listen in to background requests that are called by their target site when loading
+    Information on the background requests and the returning response data is forwarded to the user
+    '''
+    try:
+
         back_data = scrape_background_requests(message_body.message)
         # logger.info(data)
         return JSONResponse(
-            content=jsonable_encoder(front_data + back_data)
+            content=jsonable_encoder(back_data)
         )    
     except Exception as e:
         logger.info(str(e))

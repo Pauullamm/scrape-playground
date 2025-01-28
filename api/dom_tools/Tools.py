@@ -1,10 +1,9 @@
 import requests
 from bs4 import BeautifulSoup
 import requests.cookies
-from api.server_tools.utils import ScraperTool
-from api.server_tools.cookiegetter import cookiegetter
+from server_tools.utils import ScraperTool
+from server_tools.cookiegetter import cookiegetter
 import re
-import asyncio
 
 url_pattern = r'^(https?|ftp):\/\/[^\s/$.?#].[^\s]*$'
 json_regex = r"^https?:\/\/[^\s]*\.json(?:\?[^\s]*)?$"

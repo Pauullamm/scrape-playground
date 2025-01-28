@@ -1,23 +1,23 @@
 // FrontendTools.jsx
 import { useState } from 'react';
 import { Code2, LayoutTemplate } from 'lucide-react';
-import BrowserAutomation from '../../tools/BrowserAutomation';
-import HTMLParser from '../../tools/HTMLParser';
+import BrowserAutomation from '../../tools/frontend/BrowserAutomation';
+import HTMLParser from '../../tools/frontend/HTMLParser';
 
 const tabs = [
-  { id: 'automation', label: 'Browser Automation', icon: Code2 },
   { id: 'parser', label: 'HTML Parser', icon: LayoutTemplate },
+  { id: 'automation', label: 'Browser Automation', icon: Code2 },
 ];
 
 export default function FrontendTools({ className }) {
-  const [activeTab, setActiveTab] = useState('automation');
+  const [activeTab, setActiveTab] = useState('parser');
   const [automationState, setAutomationState] = useState({});
   const [parserState, setParserState] = useState({});
 
   const renderActiveTab = () => {
     switch (activeTab) {
-      case 'automation': return <BrowserAutomation state={automationState} setState={setAutomationState} />;
       case 'parser': return <HTMLParser state={parserState} setState={setParserState} />;
+      case 'automation': return <BrowserAutomation state={automationState} setState={setAutomationState} />;
       default: return null;
     }
   };

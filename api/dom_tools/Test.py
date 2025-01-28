@@ -1,9 +1,10 @@
-from api.dom_tools.Tools import scrape
 from bs4 import BeautifulSoup
 import json
-from api.server_tools.utils import ScraperTool
 import requests
 from typing import List, Dict, Union
+import logging
+from server_tools.utils import ScraperTool
+logger = logging.getLogger(__name__)
 
 class TreeNode:
     def __init__(self, content: str):
@@ -32,46 +33,38 @@ class HTMLParser:
     '''
     def __init__(self, url: str):
         self.url = url
-        self.response = requests.get(url)
     
     def _parse_brackets(self, s: str) -> TreeNode:
         """
         Parses a string and constructs a tree of nested brackets.
-        
-        :param s: The input string containing nested brackets.
-        :return: The root TreeNode of the constructed tree.
         """
         stack = []
         root = TreeNode("root")
         stack.append(root)
         i = 0
-        n = len(self.url)
+        n = len(s)
         
         while i < n:
             if s[i] == '{':
-                # Start of a new nested bracket
                 new_node = TreeNode("")
                 stack[-1].add_child(new_node)
                 stack.append(new_node)
                 i += 1
             elif s[i] == '}':
-                # End of the current nested bracket
                 stack.pop()
                 i += 1
             else:
-                # Collect content between brackets
                 start = i
                 while i < n and s[i] not in {'{', '}'}:
                     i += 1
                 content = s[start:i].strip()
                 if content:
                     stack[-1].content += content
-            # Skip any whitespace or other characters
+            # Skip whitespace
             while i < n and s[i].isspace():
                 i += 1
-        
+    
         return root
-
     def _tree_to_json(self, node: TreeNode) -> Union[str, Dict]:
         """
         Converts a TreeNode tree into a JSON-compatible dictionary.
@@ -96,26 +89,39 @@ class HTMLParser:
 
 
     def extract_json(self):
-        soup = BeautifulSoup(self.response.text, 'html.parser')
+        scraper = ScraperTool()
+        response_text = scraper.get(self.url)
+        soup = BeautifulSoup(response_text, 'html.parser')
         
         # Find all script tags
-        scripts = soup.find_all('script')
-        extracted_data = []
-        
-        # Loop through script tags
-        for script in scripts:
-            script_content = script.string
-            if script_content:
-                start = script_content.find("{")
-                end = script_content.rfind("}")
-                json_content = script.string[start:end]
-                json_content = json_content.replace("\r", "").replace("\n", "").replace("\t", "").strip()
-                tree = self._parse_brackets(json_content)
-                final_data = self._tree_to_json(tree)
-                extracted_data.append(final_data)
-                
-                with open('test.json', 'w', encoding='utf-8') as f:
-                    json.dump(extracted_data, f, ensure_ascii=False, indent=4)
+        try:
+            scripts = soup.find_all('script')
+            extracted_data = []
+            
+            # Loop through script tags
+            for script in scripts:
+                script_content = script.string
+                if script_content:
+                    start = script_content.find("{")
+                    end = script_content.rfind("}")
+                    json_content = script.string[start:end]
+                    json_content = json_content.replace("\r", "").replace("\n", "").replace("\t", "").strip()
+                    tree = self._parse_brackets(json_content)
+                    final_data = self._tree_to_json(tree)
+                    extracted_data.append(final_data)
                     
+                    with open('test.json', 'w', encoding='utf-8') as f:
+                        json.dump(extracted_data, f, ensure_ascii=False, indent=4)
+        
+        except Exception as e:
+            logger.info(str(e))
+            return extracted_data
+            
                 
         return extracted_data
+    
+# testing below
+
+# test_url = 'https://products.mhra.gov.uk/substance/?substance=ABACAVIR'
+# parser = HTMLParser(test_url)
+# print(parser.extract_json())
