@@ -4,6 +4,7 @@ import requests
 from typing import List, Dict, Union
 import logging
 from server_tools.utils import ScraperTool
+from dom_tools.Tools import get_resource
 logger = logging.getLogger(__name__)
 
 class TreeNode:
@@ -89,8 +90,7 @@ class HTMLParser:
 
 
     def extract_json(self):
-        scraper = ScraperTool()
-        response_text = scraper.get(self.url)
+        response_text = get_resource(self.url)
         soup = BeautifulSoup(response_text, 'html.parser')
         
         # Find all script tags

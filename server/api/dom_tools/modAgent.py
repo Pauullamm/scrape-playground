@@ -194,12 +194,14 @@ class modAgent:
             input_messages = self.message_manager.get_messages()
             try:
                 model_output = await self.get_next_action(input_messages)
+                logger.info(f'Model Output:', model_output)
                 self._save_conversation(input_messages, model_output)
                 self.message_manager._remove_last_state_message()  # we dont want the whole state in the chat history
                 self.message_manager.add_model_output(model_output)
             except Exception as e:
                 # model call failed, remove last state message from history
                 self.message_manager._remove_last_state_message()
+                logger.error(f'line 203 Error: {str(e)}')
                 raise e
 
             result: list[ActionResult] = await self.controller.multi_act(
@@ -301,10 +303,9 @@ class modAgent:
     @time_execution_async('--get_next_action')
     async def get_next_action(self, input_messages: list[BaseMessage]) -> AgentOutput:
         """Get next action from LLM based on current state"""
-
+        # logger.info(f'input messages: {str(input_messages[1:])}')
         structured_llm = self.llm.with_structured_output(self.AgentOutput, include_raw=True)
         response: dict[str, Any] = await structured_llm.ainvoke(input_messages)  # type: ignore
-
         parsed: AgentOutput = response['parsed']
         if parsed is None:
             raise ValueError(f'Could not parse response.')

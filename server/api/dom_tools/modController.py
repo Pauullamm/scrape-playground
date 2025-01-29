@@ -13,6 +13,7 @@ from browser_use.controller.views import (
 	ExtractPageContentAction,
 	GoToUrlAction,
 	InputTextAction,
+    NoParamsAction,
 	OpenTabAction,
 	ScrollAction,
 	SearchGoogleAction,
@@ -73,8 +74,8 @@ class modController:
             await self.send_log(msg)
             return ActionResult(extracted_content=msg, include_in_memory=True)
 
-        @self.registry.action('Go back', requires_browser=True)
-        async def go_back(browser: BrowserContext):
+        @self.registry.action('Go back', param_model=NoParamsAction, requires_browser=True)
+        async def go_back(_: NoParamsAction, browser: BrowserContext):
             page = await browser.get_current_page()
             await page.go_back()
             await page.wait_for_load_state()

@@ -1,18 +1,13 @@
 import React, { useState } from 'react';
 import clsx from 'clsx';
-import { Folder, FileText } from 'lucide-react'
+import { Folder, FileText, Copy } from 'lucide-react'
 
-const downloadJson = (data, filename = 'data.json') => {
-  const jsonString = JSON.stringify(data, null, 2);
-  const blob = new Blob([jsonString], { type: 'application/json' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = filename;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
+const copyJson = async (data) => {
+  if (!data) {
+    return;
+  }
+  const jsonString = JSON.stringify(data, null, 4);
+  await navigator.clipboard.writeText(jsonString);
 };
 
 const TreeNode = ({ node, depth = 0, isLast = false }) => {
@@ -95,38 +90,26 @@ const TreeNode = ({ node, depth = 0, isLast = false }) => {
 };
 
 export default function TreeVisualizer({ data }) {
-  const handleDownload = () => {
+  const handleCopy = async () => {
     if (!data) return;
     const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-    downloadJson(data, `tree-data-${timestamp}.json`);
+    alert("Copied JSON")
+    await copyJson(data);
   };
   return (
     <div className="p-4 bg-[#1A1A1A] rounded-lg border border-[#2A2A2A]">
       <div className="text-gray-400 text-sm mb-2">Tree Structure Visualization</div>
       <button
-        onClick={handleDownload}
+        onClick={handleCopy}
         disabled={!data}
         className={clsx(
-          'px-3 py-1 text-sm rounded-lg transition-colors',
+          'px-3 py-1 text-sm rounded-lg transition-colors flex gap-2',
           'bg-[#2A2A2A] text-gray-300 hover:bg-[#3A3A3A]',
           'disabled:opacity-50 disabled:cursor-not-allowed'
         )}
       >
-        Download JSON
-        <svg
-          className="w-4 h-4 ml-2 inline-block"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
-          />
-        </svg>
+        Copy JSON
+        <Copy size={14} className='mt-1'/>
       </button>
       <div className="text-wrap">
         {data ? (

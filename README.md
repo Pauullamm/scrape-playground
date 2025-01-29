@@ -24,7 +24,7 @@ Terrier AI combines web scraping tools with AI agents to simplify data extractio
 
 ### Prerequisites
 - Node.js v16+
-- Python 3.13+
+- Python 3.13+ (Important - previous versions will throw package version/OS related issues)
 - Chrome/Firefox browsers
 
 ### Installation
@@ -36,6 +36,7 @@ npm install
 ```
 **API/Server Setup:**
 ```bash
+cd server
 python3 -m venv venv
 ```
 - on MacOS run:

@@ -155,9 +155,13 @@ export default function BrowserAutomation() {
                     <span className="uppercase">{entry.type}</span>
                   </div>
                   {entry.type === 'gif' ? (
-                    <img src={entry.content} alt="GIF" className="w-1/2" />
+                    <div className='flex justify-center'>
+                      <img src={entry.content} alt="GIF" className="w-3/4" />
+                    </div>
                   ) : entry.type === 'image' ? (
-                    <img src={entry.content} alt="Image" className="w-1/2" />
+                    <div className='flex justify-center'>
+                      <img src={entry.content} alt="Image" className="w-3/4" />
+                    </div>
                   ) : (
                     <div className="text-gray-100 font-mono break-words whitespace-pre-wrap">
                       {entry.content}

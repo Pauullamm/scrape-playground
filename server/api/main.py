@@ -11,6 +11,7 @@ from load_dotenv import load_dotenv
 import os
 import logging
 from langchain_openai import ChatOpenAI
+from langchain_ollama import ChatOllama
 from dom_tools.modAgent import modAgent
 from dom_tools.modController import modController
 from browser_use import ActionResult
@@ -126,10 +127,13 @@ async def websocket_endpoint(websocket: WebSocket):
     if not server_active:
         await websocket.close(code=status.WS_1013_TRY_AGAIN_LATER)
         return
-    llm = ChatOpenAI(model="gpt-4o", api_key=os.getenv('OPENAI_API_KEY'))
+    # llm = ChatOpenAI(model="gpt-4o", api_key=os.getenv('OPENAI_API_KEY'))
     # I don't think deepseek has vision capabilities yet
     #llm = ChatOpenAI(base_url="https://api.deepseek.com/v1", model="deepseek-chat", api_key=os.getenv('DEEPSEEK_API_KEY'))
-    
+    llm = ChatOllama(
+        model='qwen2.5:7b',
+        base_url="http://localhost:11434"
+    )
     await websocket.accept()
     try:
         
@@ -150,7 +154,8 @@ async def websocket_endpoint(websocket: WebSocket):
                 task=data,
                 llm=llm,
                 websocket=websocket,
-                controller=modController(websocket=websocket)
+                controller=modController(websocket=websocket),
+                max_actions_per_step=1
             )
             await agent.run()
     except WebSocketDisconnect:
