@@ -169,9 +169,9 @@ Pygments==2.19.1
 pylsqpack==0.3.18
 PyMsgBox==1.0.9
 pynose==1.5.3
-pyobjc-core==11.0
-pyobjc-framework-Cocoa==11.0
-pyobjc-framework-Quartz==11.0
+pyobjc-core==11.0; sys_platform == 'darwin'
+pyobjc-framework-Cocoa==11.0; sys_platform == 'darwin'
+pyobjc-framework-Quartz==11.0; sys_platform == 'darwin'
 pyOpenSSL==24.3.0
 pyotp==2.9.0
 pyparsing==3.2.1
