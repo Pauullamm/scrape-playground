@@ -14,7 +14,6 @@ from io import BytesIO
 from pathlib import Path
 from typing import Any, Optional, Type, TypeVar
 from fastapi import WebSocket
-from dom_tools.modController import modController
 
 from dotenv import load_dotenv
 from langchain_core.language_models.chat_models import BaseChatModel

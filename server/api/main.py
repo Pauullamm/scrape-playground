@@ -4,20 +4,17 @@ from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 import uvicorn
-from dom_tools.Terrier_Agents import DeepSeekAgent
-from dom_tools.prompt import agent_prompt, CODE_SYSTEM_PROMPT
-from dom_tools.Tools import regex_parse, get_resource, scrape_background_requests, actions
+from tools.Terrier_Agents import DeepSeekAgent
+from tools.prompt import GENERAL_AGENT_PROMPT
+from server.api.tools.Agent_Tools import scrape_background_requests, actions
 from load_dotenv import load_dotenv
 import os
 import logging
 from langchain_openai import ChatOpenAI
 from langchain_ollama import ChatOllama
-from dom_tools.modAgent import modAgent
-from dom_tools.modController import modController
-from browser_use import ActionResult
-import re
-import json5
-from dom_tools.Test import HTMLParser
+from tools.modAgent import modAgent
+from tools.modController import modController
+from tools.utils import HTMLParser
 
 logger = logging.getLogger(__name__)
 server_active = True
@@ -67,7 +64,7 @@ async def generate_response(request: Request, message_body: MessageBody):
         auth_header = request.headers.get("Authorization")
         token = auth_header.split(" ")[1] if auth_header.startswith("Bearer ") else None
         # agent = OpenAIAgent(prompt=agent_prompt, tools=actions, api_key=token)
-        agent = DeepSeekAgent(prompt=agent_prompt, tools=actions, api_key=os.getenv('DEEPSEEK_API_KEY'))
+        agent = DeepSeekAgent(prompt=GENERAL_AGENT_PROMPT, tools=actions, api_key=os.getenv('DEEPSEEK_API_KEY'))
 
         query = message_body.message
 

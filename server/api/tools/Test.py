@@ -1,10 +1,8 @@
 from bs4 import BeautifulSoup
 import json
-import requests
 from typing import List, Dict, Union
 import logging
-from server_tools.utils import ScraperTool
-from dom_tools.Tools import get_resource
+from server.api.tools.Agent_Tools import get_resource
 logger = logging.getLogger(__name__)
 
 class TreeNode:
