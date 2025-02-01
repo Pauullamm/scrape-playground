@@ -6,9 +6,14 @@ CONTENT_TO_PARSE = []
 max_chunk_tokens = 800000
 avg_chars_per_token = 4
 
+@tool
 def get_resource(link:str) -> str:
     '''
     Retrieves the resource at the specified link
+    Args:
+        link: str -> the url of the resource to be retrieved
+    Returns:
+        The content of the resource as a string
     '''
     # url_pattern = r'^(https?|ftp):\/\/[^\s/$.?#].[^\s]*$'
 
@@ -119,4 +124,3 @@ def output_content(input: str) -> any:
     '''
     with open('output.txt', 'a') as f:
         f.write(input)
-    
