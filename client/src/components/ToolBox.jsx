@@ -3,7 +3,7 @@ import FrontendTools from './sections/frontend/FrontendTools';
 import bg from '../assets/bg.jpeg';
 import { BsGithub } from "react-icons/bs"
 import '../App.css'
-import StartingInput from './StartingInput';
+
 
 export default function ToolBox() {
   return (
@@ -13,17 +13,6 @@ export default function ToolBox() {
         className="fixed opacity-70 w-full h-full"
         alt="Background"
       />
-
-      {/* Introduction Section */}
-      <div className='relative z-10'>
-        <div className="max-w-7xl mx-auto px-4 py-6 w-full">
-          <p className="text-gray-200 rounded-lg backdrop-blur-sm mt-40 mb-20 ml-2">
-            Paste your search url to begin <br />
-            Scroll down to access all available utilities.<br />
-            Explore different tools to help with your scraping process.
-          </p>
-          <StartingInput />
-        </div>
         {/* Tools Container */}
         <div className="flex-1 flex flex-col max-w-7xl mx-auto px-4 w-full gap-8 pb-24">
           <BackendTools />
@@ -43,6 +32,5 @@ export default function ToolBox() {
           </div>
         </footer>
       </div>
-    </div>
   );
 }
