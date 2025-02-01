@@ -1,10 +1,14 @@
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { updateLink } from '../store/linkSlice.js'; // Make sure to import the action
+import { updateLink } from '../store/linkSlice.js'; // Redux action
+import { Search } from 'lucide-react'; // Import search icon
 
 export default function StartingInput() {
   const dispatch = useDispatch();
-  const startingUrl = useSelector((state) => state.startingUrl.startingUrl); // Get the value from Redux state
+  const startingUrl = useSelector((state) => state.startingUrl.startingUrl); // Get Redux state
+
+  const [isFocused, setIsFocused] = useState(false);
+  const [hasValue, setHasValue] = useState(startingUrl !== ''); // Initialize based on state
 
   const handleFocus = () => setIsFocused(true);
   const handleBlur = (e) => {
@@ -14,43 +18,39 @@ export default function StartingInput() {
 
   const handleChange = (e) => {
     const value = e.target.value;
-    dispatch(updateLink({ startingUrl: value })); // Dispatch action to update the store
+    dispatch(updateLink({ startingUrl: value })); // Update Redux store
   };
 
-  const [isFocused, setIsFocused] = useState(false);
-  const [hasValue, setHasValue] = useState(startingUrl !== ''); // Initialize with Redux state value
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (startingUrl.trim()) {
+      console.log("Searching for:", startingUrl); // Replace with actual search functionality
+    }
+  };
 
   return (
-    <div className="relative mx-auto my-12 w-96">
+    <form onSubmit={handleSubmit} className="relative mx-auto my-12 w-96 flex items-center border-b-2 border-gray-400">
       {/* Input field */}
       <input
         type="text"
         id="input"
         required
-        value={startingUrl} // Set input value to Redux state
+        value={startingUrl} // Bind input to Redux state
         onFocus={handleFocus}
         onBlur={handleBlur}
         onChange={handleChange} // Update Redux store on change
-        className="w-full px-0 pb-1 text-lg border-b-2 border-gray-400 bg-transparent outline-none focus:border-gray-700"
+        onKeyDown={(e) => e.key === 'Enter' && handleSubmit(e)} // Handle Enter key
+        className="w-full px-4 py-2 text-lg bg-transparent outline-none focus:border-gray-700"
+        placeholder="Enter URL to begin"
       />
-      
-      {/* Label */}
-      <label
-        htmlFor="input"
-        className={`absolute left-0 transition-all duration-300 ease-in-out pointer-events-none ${
-          (isFocused || hasValue) ? '-top-5 text-sm text-gray-600' : 'top-0 text-gray-300'
-        }`}
-      >
-        Enter URL to begin
-      </label>
 
-      {/* Underline */}
-      <div
-        className={`absolute bottom-0 left-0 h-[2px] w-full bg-gray-700 transform transition-all duration-300 ease-in-out ${
-          isFocused || hasValue ? 'scale-x-100' : 'scale-x-0'
-        }`}
-      ></div>
-    </div>
+      {/* Search button */}
+      <button 
+        type="submit" 
+        className="p-2 hover:text-gray-500 transition"
+      >
+        <Search className="w-5 h-5" />
+      </button>
+    </form>
   );
 };
-
