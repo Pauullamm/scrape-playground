@@ -1,14 +1,14 @@
 import requests
 from bs4 import BeautifulSoup
 import requests.cookies
-from server_tools.utils import ScraperTool
-from server_tools.cookiegetter import cookiegetter
+from utils import ScraperTool, HTMLParser
+from cookiegetter import cookiegetter
 import re
 
 url_pattern = r'^(https?|ftp):\/\/[^\s/$.?#].[^\s]*$'
 json_regex = r"^https?:\/\/[^\s]*\.json(?:\?[^\s]*)?$"
 
-def get_resource(link):
+def get_resource(link:str):
     '''
     Retrieves the resource at the specified link
     '''
@@ -33,7 +33,7 @@ def get_resource(link):
     #     return res.text.strip()
     return res.text.strip()
 
-def scrape(url):
+def scrape(url:str):
     '''
     retrieves parsed html from a specified url
     '''
@@ -41,21 +41,21 @@ def scrape(url):
     base_page_data = scraper.parse_html(scraper.get(url))
     return base_page_data
 
-def regex_parse(html, regex):
+def regex_parse(html:str, regex:str):
     '''
     Parses html using a regex pattern
     '''
     return re.findall(regex, html)
-def scrape_background_requests(url):
+def scrape_background_requests(url:str):
     '''
     Retrieves all background requests made by the page at the specified url
     Parses/filters responses to obtain relevant data (e.g. json/javascript variables with json content) 
     '''
     scraper = ScraperTool()
     background_request_data = scraper.capture_bg_responses(url)
-    return background_request_data
+    return str(background_request_data)
 
-def take_screenshot(url):
+def take_screenshot(url:str):
     '''
     Takes a screenshot of the page at the specified url
     '''
@@ -63,7 +63,7 @@ def take_screenshot(url):
     return scraper.take_screenshot(url)
 
 
-def search_google(query):
+def search_google(query:str):
     '''
     Applies a search query to google search and obtains the title and links of the search results
     '''
@@ -90,10 +90,43 @@ def search_google(query):
         # snippet = result.find('div', class_='s3v9rd').text
         print(f"Title: {title}\nLink: {link}\n")
 
+def parse_html(url: str):
+    '''
+    parses and searches DOM html content for json-like variables
+    '''
+    parser = HTMLParser(url=url)
+    data = parser.extract_json()
+    return str(data)
+
+def parse_dom_scripts(url:str) -> str:
+    '''
+    Retrieves the script tags from the dom and formats it into a string
+    '''
+    response_text = get_resource(url)
+    soup = BeautifulSoup(response_text, 'html.parser')
+    
+    # Find all script tags
+    try:
+        scripts = soup.find_all('script')
+        extracted_data = []
+        
+        # Loop through script tags
+        for script in scripts:
+            script_content = script.string
+            if script_content:
+                extracted_data.append(script_content)
+
+        return str(extracted_data)
+    except Exception as e:
+        print(f'Error parsing scripts: {str(e)}')
+        return ""
+    
 actions = {
-    "basic_scrape": scrape,
+    "scrape": scrape,
     "scrape_background_requests": scrape_background_requests,
     "take_screenshot": take_screenshot,
     "search_google": search_google,
-    "get_resource": get_resource
+    "get_resource": get_resource,
+    "parse_html": parse_html,
+    "parse_dom_scripts": parse_dom_scripts
 }

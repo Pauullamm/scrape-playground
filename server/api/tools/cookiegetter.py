@@ -10,6 +10,3 @@ def cookiegetter(url):
         cookies = page.context.cookies()
         browser.close()
         return cookies
-
-# if __name__ == "__main__":
-#     print(cookiegetter('https://chatgpt.com/'))

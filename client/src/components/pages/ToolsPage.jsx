@@ -1,11 +1,10 @@
-import BackendTools from './sections/backend/BackendTools';
-import FrontendTools from './sections/frontend/FrontendTools';
-import bg from '../assets/bg.jpeg';
+import BackendTools from '../sections/backend/BackendTools';
+import FrontendTools from '../sections/frontend/FrontendTools';
+import bg from '../../assets/bg.jpeg';
 import { BsGithub } from "react-icons/bs"
-import '../App.css'
+import '../../App.css'
 
-
-export default function ToolBox() {
+export default function ToolsPage() {
   return (
     <div className="min-h-screen bg-[#1A1A1A] text-white flex flex-col">
       <img
