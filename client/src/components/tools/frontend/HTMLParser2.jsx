@@ -2,9 +2,10 @@ import React, { useState } from 'react';
 
 export default function HTMLParser2({ state, setState }) {
     const [url, setUrl] = useState(state.url || '');
-    const [llmOutput, setLlmOutput] = useState(state.llmOutput || null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
+    const [llmOutput, setLlmOutput] = useState(state.llmOutput || null);
+    const [callerOutput, setCallerOutput] = useState(state.callerOutput || null);
 
     const BACKEND_URL = "http://127.0.0.1:5000";
 
@@ -23,21 +24,26 @@ export default function HTMLParser2({ state, setState }) {
             if (!response.ok) {
                 throw new Error(`HTTP error! Status: ${response.status}`);
             }
-
             const data = await response.json();
-            let parsedOutput;
             
+            // Process reader output
+            let parsedReaderOutput;
             try {
-                parsedOutput = JSON.parse(data.llm_output);
+                parsedReaderOutput = JSON.parse(data[0].llm_output);
             } catch (parseError) {
-                // If not valid JSON, keep as raw string
-                parsedOutput = data.llm_output;
+                parsedReaderOutput = data[0].llm_output;
             }
 
-            setLlmOutput(parsedOutput);
+            // Process caller output
+            const rawCallerOutput = data[1]?.caller_output || [];
+
+            // Update states
+            setLlmOutput(parsedReaderOutput);
+            setCallerOutput(rawCallerOutput);
             setState({
                 url: url,
-                llmOutput: parsedOutput
+                llmOutput: parsedReaderOutput,
+                callerOutput: rawCallerOutput
             });
 
         } catch (error) {
@@ -48,6 +54,36 @@ export default function HTMLParser2({ state, setState }) {
         }
     };
 
+
+    const handleDownload = () => {
+        if (!callerOutput || callerOutput.length === 0) return;
+        
+        const jsonString = JSON.stringify(callerOutput, null, 2);
+        const blob = new Blob([jsonString], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `caller_output_${Date.now()}.json`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    };
+
+        // Add this button to your JSX
+        const renderDownloadButton = () => {
+            if (!callerOutput || callerOutput.length === 0) return null;
+            
+            return (
+                <button
+                    onClick={handleDownload}
+                    className="ml-2 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors"
+                >
+                    Download Structured Data
+                </button>
+            );
+        };
+    
     const renderOutput = () => {
         if (!llmOutput) return null;
         
@@ -118,6 +154,7 @@ export default function HTMLParser2({ state, setState }) {
                                 'Analyze'
                             )}
                         </button>
+                        {renderDownloadButton()}
                     </div>
                 </div>
 

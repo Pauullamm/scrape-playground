@@ -10,12 +10,12 @@ from tools.Agent_Tools import scrape_background_requests, actions
 from load_dotenv import load_dotenv
 import os
 import logging
-from langchain_openai import ChatOpenAI
 from langchain_ollama import ChatOllama
 from tools.modAgent import modAgent
 from tools.modController import modController
 from tools.utils import HTMLParser
-from tools.experiment.JSReader import flow
+from tools.experiment.JSReader import reader_flow
+from tools.experiment.JSCaller import caller_flow
 
 logger = logging.getLogger(__name__)
 server_active = True
@@ -78,35 +78,54 @@ async def generate_response(request: Request, message_body: MessageBody):
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
-
 @app.post("/foreground_parse")
 def foreground_parse(message_body: MessageBody):
-    '''
-    This endpoint allows the user to parse html to look for json-like content embedded in the frontend DOM
-    it receives a url and the html content is requested to be parsed
-    '''
+    """
+    This endpoint allows the user to parse HTML to look for JSON-like content embedded in the frontend DOM.
+    It receives a URL and the HTML content is requested to be parsed.
+    """
     try:
-        shared = {
-            "url": message_body.message
+        # Initialize memory dictionaries
+        reader_mem = {
+            "url": message_body.message,
+            "variables": [],
+            "llm_output": ""
         }
-        flow.run(shared=shared)
-        output = {
-            "url": shared["url"],
-            "llm_output": shared["llm_output"].strip('```json')
+        
+        caller_mem = {
+            "url": message_body.message,
+            "variables": [],
+            "llm_output": ""
         }
-        front_parser = HTMLParser(message_body.message)
-        front_data = front_parser.extract_json()
+
+        # Run the reader flow
+        reader_flow.run(shared=reader_mem)
+        reader_output = {
+            "url": reader_mem["url"],
+            "llm_output": reader_mem["llm_output"].strip('```json')
+        }
+
+        # Run the caller flow
+        caller_flow.run(shared=caller_mem)
+        caller_output = {
+            "url": caller_mem["url"],
+            "caller_output": caller_mem["output"]
+        }
+
+        # Return the response with the parsed outputs
         return JSONResponse(
-            content=jsonable_encoder(output)
+            content=[jsonable_encoder(reader_output), jsonable_encoder(caller_output)]
         )
+    
     except Exception as e:
-        logger.info(f'Error parsing frontend HTML: {str(e)}')
+        # Log and handle exceptions
+        logger.error(f"Error parsing frontend HTML: {str(e)}")
         return JSONResponse(
             content={"error": str(e)},
             status_code=500,
             headers={"Access-Control-Allow-Origin": ",".join(origins)}
         )
-        
+   
 @app.post("/background_capture")
 def background_capture(message_body: MessageBody):
     '''

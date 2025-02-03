@@ -6,7 +6,6 @@ import os
 from dotenv import load_dotenv
 import google.generativeai as genai
 from .pocketflow_prompt import PF_PARSER_PROMPT
-import json
 
 load_dotenv()
 
@@ -125,12 +124,12 @@ def retrieve_js_content(url: str) -> any:
     return pre_process(link=url)
 
 
-def call_llm(message:str) -> str:
+def call_llm(system_prompt:str, message:str) -> str:
     api_key = os.getenv('GEMINI_API_KEY')
     genai.configure(api_key=api_key)
-    model = genai.GenerativeModel(model_name="gemini-2.0-flash-exp", system_instruction=PF_PARSER_PROMPT)
+    model = genai.GenerativeModel(model_name="gemini-2.0-flash-exp", system_instruction=system_prompt)
     chat = model.start_chat()
-    response = chat.send_message(message)
+    response = chat.send_message(message, request_options={"timeout": 1000})
     
     return response.text
 
@@ -157,7 +156,7 @@ class ReadJS(Node):
         return shared["data"]
     
     def exec(self, prep_res: list[str]):
-        llm_output = call_llm(str(prep_res))
+        llm_output = call_llm(system_prompt=PF_PARSER_PROMPT, message=str(prep_res))
         return llm_output
         
     def post(self, shared, p, exec_res): 
@@ -165,10 +164,10 @@ class ReadJS(Node):
         
     
     
-load = LoadJS()
-read = ReadJS()
+load = LoadJS(max_retries=2)
+read = ReadJS(max_retries=2)
 load >> read
-flow = Flow(start=load)
+reader_flow = Flow(start=load)
 # link='https://www.jdsports.co.uk/men/mens-footwear/trainers/'
 # shared={"url": link}
 # load.run(shared={
