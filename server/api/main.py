@@ -6,7 +6,7 @@ from pydantic import BaseModel
 import uvicorn
 from tools.Terrier_Agents import DeepSeekAgent
 from tools.prompt import GENERAL_AGENT_PROMPT
-from server.api.tools.Agent_Tools import scrape_background_requests, actions
+from tools.Agent_Tools import scrape_background_requests, actions
 from load_dotenv import load_dotenv
 import os
 import logging

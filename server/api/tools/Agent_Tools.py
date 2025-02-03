@@ -1,8 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
-import requests.cookies
-from utils import ScraperTool, HTMLParser
-from cookiegetter import cookiegetter
+from tools.utils import ScraperTool, HTMLParser
+from tools.cookiegetter import cookiegetter
 import re
 
 url_pattern = r'^(https?|ftp):\/\/[^\s/$.?#].[^\s]*$'
