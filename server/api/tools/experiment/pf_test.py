@@ -1,15 +1,26 @@
-from smolagents import tool
-from cookiegetter import cookiegetter
+from pocketflow import Node, Flow
 import requests
 from playwright.sync_api import sync_playwright
-import re
+import time
+import os
+from dotenv import load_dotenv
+import google.generativeai as genai
+from pocketflow_prompt import PF_PARSER_PROMPT
 import json
 
-CONTENT_TO_PARSE = []
-max_chunk_tokens = 800000
-avg_chars_per_token = 4
+load_dotenv()
 
-@tool
+
+def cookiegetter(url):
+    with sync_playwright() as p:
+        browser = p.chromium.launch(headless=True)
+        page = browser.new_page()
+        page.goto(url)
+        time.sleep(2)
+        cookies = page.context.cookies()
+        browser.close()
+        return cookies
+
 def get_resource(link:str) -> str:
     '''
     Retrieves the resource at the specified link
@@ -42,8 +53,7 @@ def get_resource(link:str) -> str:
     return res.text.strip()
 
 
-
-def split_js_content(js_content: str) -> list[str]:
+def split_js_content(js_content:str, max_chunk_tokens:int = 800000, avg_chars_per_token:int = 4) -> list[str]:
     """Split JavaScript content into semantically meaningful chunks.
     
     Args:
@@ -104,7 +114,6 @@ def pre_process(link:str) -> list[str]:
     except Exception as e:
         print(f'Error retrieving content: {str(e)}')
         
-@tool
 def retrieve_js_content(url: str) -> any:
     '''
     This tool retrieves javascript content from a webpage url and splits it into a list of javascript variables.
@@ -112,51 +121,64 @@ def retrieve_js_content(url: str) -> any:
     Args:
         url: The webpage url from which its javascript variables are to be extracted from
     '''
-    print(url)
+    # print(url)
     return pre_process(link=url)
 
 
-@tool
-def output_content(input: str) -> any:
-    '''
-    This tool writes the agent's output to a text file.
-    It does not return an output
+def call_llm(message:str) -> str:
+    api_key = os.getenv('GEMINI_API_KEY')
+    genai.configure(api_key=api_key)
+    model = genai.GenerativeModel(model_name="gemini-2.0-flash-exp", system_instruction=PF_PARSER_PROMPT)
+    chat = model.start_chat()
+    response = chat.send_message(message)
     
-    Args:
-        input: The string of text the agent wishes to output
-    '''
-    with open('output.txt', 'a') as f:
-        f.write(input)
+    return response.text
 
-@tool
-def return_js_variable(url: str, variable_name: str) -> any:
-    '''
-    This tool extracts and returns a javascript variable that is defined in a <script> tag in a webpage
+
+
+class LoadJS(Node):
+    def prep(self, shared: dict) -> str:
+        '''
+        Returns the text from a dom html
+        Args:
+            shared: url link to extract data from
+        '''
+        url = shared["url"]
+        data = pre_process(url)
+        shared["data"] = data
     
-    Args:
-        url: webpage url from which to extract the javascript variable
-        variable_name: name of the javascript variable to return
-    '''
-    with sync_playwright() as p:
-        browser = p.chromium.launch(headless=True)
-        page = browser.new_page()
-        page.goto(url, wait_until="domcontentloaded")
-
-        # Get all script elements on the page
-        scripts = page.locator("script").all_inner_texts()
-
-        for script in scripts:
-            if variable_name in script:
-                # Extract the variable using regex
-                match = re.search(rf"{variable_name}\s*=\s*({{.*?}}|\[.*?\])", script, re.DOTALL)
-                if match:
-                    try:
-                        data = json.loads(match.group(1))  # Parse JSON object
-                        browser.close()
-                        return data
-                    except json.JSONDecodeError:
-                        # Could not parse, might need further handling
-                        print('Could not parse variable as json')
-
-        browser.close()
-        return None
+    def exec(self, prep_res): pass
+    
+    def post(self, shared, prep_res, exec_res): pass
+    
+class ReadJS(Node):
+    def prep(self, shared: dict) -> list[str]:
+        # print(shared)
+        return shared["data"]
+    
+    def exec(self, prep_res: list[str]):
+        print(f'Number of scripts to read : {len(prep_res)}')
+        llm_output = call_llm(str(prep_res))
+        return llm_output
+        
+    def post(self, shared, p, exec_res): 
+        shared["llm_output"] = str(exec_res)
+        
+    
+    
+load = LoadJS()
+read = ReadJS()
+link='https://bibleread.online/life-study-of-the-bible/life-study-of-matthew/1/#cont1'
+shared={"url": link}
+# load.run(shared={
+#     "url": link
+# })
+load >> read
+flow = Flow(start=load)
+flow.run(shared=shared)
+output = {
+    "url": shared["url"],
+    "llm_output": shared["llm_output"].strip('```json')
+}
+with open('pocketflow.json', 'w') as f:
+    json.dump(output, f, indent=4)
