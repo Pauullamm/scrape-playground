@@ -21,7 +21,7 @@ export default function HomePage() {
             {/* Background image */}
             <img
                 src={hbg}
-                className="fixed opacity-50 w-full h-full object-cover"
+                className="fixed opacity-50 w-full h-full object-cover pointer-events-none"
                 alt="Background"
             />
 

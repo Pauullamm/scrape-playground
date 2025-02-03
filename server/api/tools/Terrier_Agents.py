@@ -7,8 +7,7 @@ import google.generativeai as ggenai
 from google.generativeai.types import content_types
 from collections.abc import Iterable
 import logging
-from Agent_Tools import get_resource
-from cookiegetter import cookiegetter
+from tools.cookiegetter import cookiegetter
 
 logger = logging.getLogger(__name__)
 
