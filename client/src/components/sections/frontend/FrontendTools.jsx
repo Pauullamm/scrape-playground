@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import { Code2, LayoutTemplate } from 'lucide-react';
 import BrowserAutomation from '../../tools/frontend/BrowserAutomation';
-import HTMLParser from '../../tools/frontend/HTMLParser';
+import HTMLParser2 from '../../tools/frontend/HTMLParser2';
 
 const tabs = [
   { id: 'parser', label: 'HTML Parser', icon: LayoutTemplate },
@@ -16,7 +16,7 @@ export default function FrontendTools({ className }) {
 
   const renderActiveTab = () => {
     switch (activeTab) {
-      case 'parser': return <HTMLParser state={parserState} setState={setParserState} />;
+      case 'parser': return <HTMLParser2 state={parserState} setState={setParserState} />;
       case 'automation': return <BrowserAutomation state={automationState} setState={setAutomationState} />;
       default: return null;
     }

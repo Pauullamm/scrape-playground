@@ -15,6 +15,7 @@ from langchain_ollama import ChatOllama
 from tools.modAgent import modAgent
 from tools.modController import modController
 from tools.utils import HTMLParser
+from tools.experiment.JSReader import flow
 
 logger = logging.getLogger(__name__)
 server_active = True
@@ -85,10 +86,18 @@ def foreground_parse(message_body: MessageBody):
     it receives a url and the html content is requested to be parsed
     '''
     try:
+        shared = {
+            "url": message_body.message
+        }
+        flow.run(shared=shared)
+        output = {
+            "url": shared["url"],
+            "llm_output": shared["llm_output"].strip('```json')
+        }
         front_parser = HTMLParser(message_body.message)
         front_data = front_parser.extract_json()
         return JSONResponse(
-            content=jsonable_encoder(front_data)
+            content=jsonable_encoder(output)
         )
     except Exception as e:
         logger.info(f'Error parsing frontend HTML: {str(e)}')

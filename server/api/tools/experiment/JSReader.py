@@ -1,11 +1,11 @@
-from pocketflow import Node, Flow
+from .pocketflow import Node, Flow
 import requests
 from playwright.sync_api import sync_playwright
 import time
 import os
 from dotenv import load_dotenv
 import google.generativeai as genai
-from pocketflow_prompt import PF_PARSER_PROMPT
+from .pocketflow_prompt import PF_PARSER_PROMPT
 import json
 
 load_dotenv()
@@ -157,7 +157,6 @@ class ReadJS(Node):
         return shared["data"]
     
     def exec(self, prep_res: list[str]):
-        print(f'Number of scripts to read : {len(prep_res)}')
         llm_output = call_llm(str(prep_res))
         return llm_output
         
@@ -168,17 +167,17 @@ class ReadJS(Node):
     
 load = LoadJS()
 read = ReadJS()
-link='https://bibleread.online/life-study-of-the-bible/life-study-of-matthew/1/#cont1'
-shared={"url": link}
+load >> read
+flow = Flow(start=load)
+# link='https://www.jdsports.co.uk/men/mens-footwear/trainers/'
+# shared={"url": link}
 # load.run(shared={
 #     "url": link
 # })
-load >> read
-flow = Flow(start=load)
-flow.run(shared=shared)
-output = {
-    "url": shared["url"],
-    "llm_output": shared["llm_output"].strip('```json')
-}
-with open('pocketflow.json', 'w') as f:
-    json.dump(output, f, indent=4)
+# flow.run(shared=shared)
+# output = {
+#     "url": shared["url"],
+#     "llm_output": shared["llm_output"].strip('```json')
+# }
+# with open('pocketflow.json', 'w') as f:
+#     json.dump(output, f, indent=4)
