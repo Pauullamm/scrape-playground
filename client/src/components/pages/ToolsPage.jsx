@@ -9,7 +9,7 @@ export default function ToolsPage() {
     <div className="min-h-screen bg-[#1A1A1A] text-white flex flex-col">
       <img
         src={bg}
-        className="fixed opacity-70 w-full h-full"
+        className="fixed opacity-70 w-full h-full pointer-events-none"
         alt="Background"
       />
         {/* Tools Container */}
