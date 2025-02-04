@@ -1,8 +1,35 @@
 import { Auth } from '@supabase/auth-ui-react';
 import { customTheme } from './authTheme.js';
+import { useNavigate } from 'react-router';
+import { useEffect } from 'react';
 
+export default function AuthPage({ supabaseClient, setSession }) {
+    const navigate = useNavigate();
 
-export default function AuthPage({ supabaseClient }) {
+    // Handle user login status
+    // setSession and client is passed in from App.jsx
+    useEffect(() => {
+        supabaseClient.auth.getSession()
+            .then(({ data: { session } }) => {
+                setSession(session);
+            })
+
+        const { data: { subscription } } = supabaseClient.auth.onAuthStateChange((event, session) => {
+            if (event !== "SIGNED_OUT") {
+                
+                setSession(session)
+                navigate('/logout')
+
+            } else if (event === "SIGNED_IN") {
+                
+                navigate('/home')
+
+            }
+        })
+
+        return () => subscription.unsubscribe()
+    }, [])
+
     return (
         <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 flex items-center justify-center p-4 text-white">
             <div className="w-full max-w-md">

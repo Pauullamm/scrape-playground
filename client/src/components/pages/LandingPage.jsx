@@ -1,16 +1,29 @@
 import { useNavigate } from 'react-router-dom';
-
+import { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion'
 import { GiSniffingDog } from "react-icons/gi"
 import { MdOutlineFindInPage } from "react-icons/md"
 import { TbRobot } from "react-icons/tb"
 import { FiArrowRight } from "react-icons/fi";
+import demo from "../../assets/demo.mov"
 
 import '../../App.css'
 
 export default function LandingPage() {
     const navigate = useNavigate();
+    const [isInView, setIsInView] = useState(false);
+    const videoRef = useRef(null);
 
+    useEffect(() => {
+        if (isInView && videoRef.current) {
+            videoRef.current.play().catch(error => {
+                // Handle autoplay restrictions
+                console.log('Video autoplay failed:', error);
+            });
+        } else if (!isInView && videoRef.current) {
+            videoRef.current.pause();
+        }
+    }, [isInView]);
     const handleGetStarted = () => {
         navigate('/home');
     }
@@ -157,59 +170,40 @@ export default function LandingPage() {
                             </span>
                         </h2>
                         <p className="text-md text-gray-300 leading-relaxed">
-                            Terrier enhances traditional web scraping by first sniffing and searching valuable data from background resources. 
+                            Terrier enhances traditional web scraping by first sniffing and searching valuable data from background resources.
                             <br />
                             <br />
-                            This enables a more efficient approach, allowing you to gather critical information before leveraging common techniques like browser automation, proxies, and captcha bypasses. 
+                            This enables a more efficient approach, allowing you to gather critical information before leveraging common techniques like browser automation, proxies, and captcha bypasses.
                             <br />
                             <br />
                             With Terrier, you can simplify your scraping process and ensure that you’re always retrieving the most relevant data.
                         </p>
-                        <div className="flex items-center space-x-4">
-                            <div className="h-px w-16 bg-gradient-to-r from-amber-400 to-transparent" />
-                            <span className="text-sm text-amber-400 font-mono">// npm install terrier-hunt</span>
-                        </div>
                     </motion.div>
+
 
                     <motion.div
                         className="relative group"
                         initial={{ opacity: 0, x: 20 }}
                         whileInView={{ opacity: 1, x: 0 }}
+                        viewport={{ once: false, margin: "0px 0px -100px 0px" }}
+                        onViewportEnter={() => setIsInView(true)}
+                        onViewportLeave={() => setIsInView(false)}
                         transition={{ duration: 0.5 }}
                     >
                         <div className="absolute -inset-1 bg-gradient-to-r from-amber-400 to-orange-600 rounded-xl blur opacity-25 group-hover:opacity-40 transition-all duration-500"></div>
-                        <div className="relative rounded-xl bg-gray-900 p-8 border border-gray-700/50">
-                            <pre className="text-sm font-mono text-gray-300 overflow-x-auto">
-                                <code>
-                                    {`const terrier = require('terrier-hunt');
-
-// Initialize the hunter
-const hunter = new terrier.Hunter({
-  stealth: true,
-  persistence: true
-});
-
-// Start the hunt
-await hunter.track(targetUrl);
-const data = await hunter.retrieve();`
-                                    }
-                                </code>
-                            </pre>
+                        <div className="relative rounded-xl bg-gray-900 border border-gray-700/50">
+                            <video
+                                ref={videoRef}
+                                src={demo}
+                                muted
+                                playsInline
+                                controls={false} // Set to true if you want controls
+                                className="w-full h-auto object-cover rounded-xl"
+                            />
                         </div>
                     </motion.div>
                 </div>
             </section>
-
-            {/* Scrolling effect elements */}
-            <motion.div
-                className="absolute bottom-8 left-1/2 transform -translate-x-1/2 text-center text-gray-400"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 1 }}
-            >
-                <span className="animate-bounce block mb-2">⌄</span>
-                <span className="text-sm tracking-wide font-mono">BEGIN THE HUNT</span>
-            </motion.div>
         </div>
     )
 }

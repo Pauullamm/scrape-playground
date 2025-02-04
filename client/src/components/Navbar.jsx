@@ -1,10 +1,17 @@
 import { useState } from 'react';
-import { Globe2, Settings, Database, Menu, X } from 'lucide-react';
+import { Globe2, Settings, Database, Menu, X, LogOut } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
-export default function Navbar() {
+export default function Navbar({ supabaseClient, setSession }) {
     const [sidebarOpen, setSidebarOpen] = useState(false);
-
+    
+    async function signOut() {
+        const { error } = await supabaseClient.auth.signOut();
+        if (error) {
+            console.log(error);
+        }
+        setSession(null);
+    }
     return (
         <>
             {/* Navbar */}
@@ -53,6 +60,14 @@ export default function Navbar() {
                         <Database className="w-6 h-6" />
                         <span className="text-lg">Tools</span>
                     </Link>
+                    {/* Sign Out Button */}
+                    <button 
+                        className="flex items-center gap-3 p-3 rounded-lg hover:bg-[#2A2A2A] transition-colors"
+                        onClick={signOut}
+                    >
+                        <LogOut className="w-6 h-6" />
+                        <span className="text-lg">Sign Out</span>
+                    </button>
                 </div>
             </div>
 
