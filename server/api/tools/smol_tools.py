@@ -1,6 +1,9 @@
 from smolagents import tool
 from tools.cookiegetter import cookiegetter
 import requests
+from playwright.sync_api import sync_playwright
+import re
+import json
 
 CONTENT_TO_PARSE = []
 max_chunk_tokens = 800000
@@ -124,3 +127,36 @@ def output_content(input: str) -> any:
     '''
     with open('output.txt', 'a') as f:
         f.write(input)
+
+@tool
+def return_js_variable(url: str, variable_name: str) -> any:
+    '''
+    This tool extracts and returns a javascript variable that is defined in a <script> tag in a webpage
+    
+    Args:
+        url: webpage url from which to extract the javascript variable
+        variable_name: name of the javascript variable to return
+    '''
+    with sync_playwright() as p:
+        browser = p.chromium.launch(headless=True)
+        page = browser.new_page()
+        page.goto(url, wait_until="domcontentloaded")
+
+        # Get all script elements on the page
+        scripts = page.locator("script").all_inner_texts()
+
+        for script in scripts:
+            if variable_name in script:
+                # Extract the variable using regex
+                match = re.search(rf"{variable_name}\s*=\s*({{.*?}}|\[.*?\])", script, re.DOTALL)
+                if match:
+                    try:
+                        data = json.loads(match.group(1))  # Parse JSON object
+                        browser.close()
+                        return data
+                    except json.JSONDecodeError:
+                        # Could not parse, might need further handling
+                        print('Could not parse variable as json')
+
+        browser.close()
+        return None

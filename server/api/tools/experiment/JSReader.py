@@ -1,12 +1,11 @@
-from pocketflow import Node, Flow
+from .pocketflow import Node, Flow
 import requests
 from playwright.sync_api import sync_playwright
 import time
 import os
 from dotenv import load_dotenv
 import google.generativeai as genai
-from pocketflow_prompt import PF_PARSER_PROMPT
-import json
+from .pocketflow_prompt import PF_PARSER_PROMPT
 
 load_dotenv()
 
@@ -125,12 +124,12 @@ def retrieve_js_content(url: str) -> any:
     return pre_process(link=url)
 
 
-def call_llm(message:str) -> str:
+def call_llm(system_prompt:str, message:str) -> str:
     api_key = os.getenv('GEMINI_API_KEY')
     genai.configure(api_key=api_key)
-    model = genai.GenerativeModel(model_name="gemini-2.0-flash-exp", system_instruction=PF_PARSER_PROMPT)
+    model = genai.GenerativeModel(model_name="gemini-2.0-flash-exp", system_instruction=system_prompt)
     chat = model.start_chat()
-    response = chat.send_message(message)
+    response = chat.send_message(message, request_options={"timeout": 1000})
     
     return response.text
 
@@ -157,8 +156,7 @@ class ReadJS(Node):
         return shared["data"]
     
     def exec(self, prep_res: list[str]):
-        print(f'Number of scripts to read : {len(prep_res)}')
-        llm_output = call_llm(str(prep_res))
+        llm_output = call_llm(system_prompt=PF_PARSER_PROMPT, message=str(prep_res))
         return llm_output
         
     def post(self, shared, p, exec_res): 
@@ -166,19 +164,19 @@ class ReadJS(Node):
         
     
     
-load = LoadJS()
-read = ReadJS()
-link='https://bibleread.online/life-study-of-the-bible/life-study-of-matthew/1/#cont1'
-shared={"url": link}
+load = LoadJS(max_retries=2)
+read = ReadJS(max_retries=2)
+load >> read
+reader_flow = Flow(start=load)
+# link='https://www.jdsports.co.uk/men/mens-footwear/trainers/'
+# shared={"url": link}
 # load.run(shared={
 #     "url": link
 # })
-load >> read
-flow = Flow(start=load)
-flow.run(shared=shared)
-output = {
-    "url": shared["url"],
-    "llm_output": shared["llm_output"].strip('```json')
-}
-with open('pocketflow.json', 'w') as f:
-    json.dump(output, f, indent=4)
+# flow.run(shared=shared)
+# output = {
+#     "url": shared["url"],
+#     "llm_output": shared["llm_output"].strip('```json')
+# }
+# with open('pocketflow.json', 'w') as f:
+#     json.dump(output, f, indent=4)
