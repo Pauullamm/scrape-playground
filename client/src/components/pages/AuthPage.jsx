@@ -12,23 +12,25 @@ export default function AuthPage({ supabaseClient, setSession }) {
         supabaseClient.auth.getSession()
             .then(({ data: { session } }) => {
                 setSession(session);
+                if (session) {
+                    navigate('/home')
+                }
             })
 
         const { data: { subscription } } = supabaseClient.auth.onAuthStateChange((event, session) => {
-            if (event !== "SIGNED_OUT") {
+            if (event == "SIGNED_OUT") {
                 
                 setSession(session)
-                navigate('/logout')
 
             } else if (event === "SIGNED_IN") {
                 
-                navigate('/home')
+                navigate('/home', { replace: true })
 
             }
         })
 
         return () => subscription.unsubscribe()
-    }, [])
+    }, [supabaseClient, setSession, navigate])
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 flex items-center justify-center p-4 text-white">

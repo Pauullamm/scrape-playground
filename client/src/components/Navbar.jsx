@@ -1,10 +1,10 @@
 import { useState } from 'react';
-import { Globe2, Settings, Database, Menu, X, LogOut } from 'lucide-react';
+import { Settings, Database, Menu, X, LogOut } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 export default function Navbar({ supabaseClient, setSession }) {
     const [sidebarOpen, setSidebarOpen] = useState(false);
-    
+
     async function signOut() {
         const { error } = await supabaseClient.auth.signOut();
         if (error) {
