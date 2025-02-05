@@ -3,9 +3,126 @@ from bs4 import BeautifulSoup
 from tools.utils import ScraperTool, HTMLParser
 from tools.cookiegetter import cookiegetter
 import re
+import os
+from urllib.parse import unquote, urljoin, urlparse
+import pathvalidate
+import mimetypes
+import uuid
+
 
 url_pattern = r'^(https?|ftp):\/\/[^\s/$.?#].[^\s]*$'
 json_regex = r"^https?:\/\/[^\s]*\.json(?:\?[^\s]*)?$"
+
+import os
+import requests
+import mimetypes
+import uuid
+import pathlib
+from urllib.parse import urlparse
+from urllib.parse import unquote
+import pathvalidate
+from .mdconvert import MarkdownConverter, UnsupportedFormatException, FileConversionException  # Adjust imports accordingly
+
+converter = MarkdownConverter()
+def fetch_page_as_md(url: str, downloads_folder: str, request_kwargs: dict = None):
+    download_path = ""
+    try:
+        if url.startswith("file://"):
+            download_path = os.path.normcase(os.path.normpath(unquote(url[7:])))
+            res = converter.convert_local(download_path)
+            page_title = res.title
+            page_content = res.text_content
+        else:
+            # Prepare the request parameters
+            request_kwargs = request_kwargs.copy() if request_kwargs is not None else {}
+            request_kwargs["stream"] = True
+
+            # Send an HTTP request to the URL
+            response = requests.get(url, **request_kwargs)
+            response.raise_for_status()
+
+            # If the HTTP request was successful
+            content_type = response.headers.get("content-type", "")
+
+            # Text or HTML
+            if "text/" in content_type.lower():
+                res = converter.convert_response(response)
+                page_title = res.title
+                page_content = res.text_content
+            # A download
+            else:
+                # Try producing a safe filename
+                fname = None
+                download_path = None
+                try:
+                    fname = pathvalidate.sanitize_filename(os.path.basename(urlparse(url).path)).strip()
+                    download_path = os.path.abspath(os.path.join(downloads_folder, fname))
+
+                    suffix = 0
+                    while os.path.exists(download_path) and suffix < 1000:
+                        suffix += 1
+                        base, ext = os.path.splitext(fname)
+                        new_fname = f"{base}__{suffix}{ext}"
+                        download_path = os.path.abspath(os.path.join(downloads_folder, new_fname))
+
+                except NameError:
+                    pass
+
+                # No suitable name, so make one
+                if fname is None:
+                    extension = mimetypes.guess_extension(content_type)
+                    if extension is None:
+                        extension = ".download"
+                    fname = str(uuid.uuid4()) + extension
+                    download_path = os.path.abspath(os.path.join(downloads_folder, fname))
+
+                # Open a file for writing
+                with open(download_path, "wb") as fh:
+                    for chunk in response.iter_content(chunk_size=512):
+                        fh.write(chunk)
+
+                # Render it
+                local_uri = pathlib.Path(download_path).as_uri()
+                print(local_uri)
+                page_title = "Download complete."
+                page_content = f"# Download complete\n\nSaved file to '{download_path}'"
+
+    except UnsupportedFormatException as e:
+        print(e)
+        page_title = ("Download complete.",)
+        page_content = f"# Download complete\n\nSaved file to '{download_path}'"
+    except FileConversionException as e:
+        print(e)
+        page_title = ("Download complete.",)
+        page_content = f"# Download complete\n\nSaved file to '{download_path}'"
+    except FileNotFoundError:
+        page_title = "Error 404"
+        page_content = f"## Error 404\n\nFile not found: {download_path}"
+    except requests.exceptions.RequestException as request_exception:
+        try:
+            page_title = f"Error {response.status_code}"
+
+            # If the error was rendered in HTML we might as well render it
+            content_type = response.headers.get("content-type", "")
+            if content_type is not None and "text/html" in content_type.lower():
+                res = converter.convert(response)
+                page_title = f"Error {response.status_code}"
+                page_content = f"## Error {response.status_code}\n\n{res.text_content}"
+            else:
+                text = ""
+                for chunk in response.iter_content(chunk_size=512, decode_unicode=True):
+                    text += chunk
+                page_title = f"Error {response.status_code}"
+                page_content = f"## Error {response.status_code}\n\n{text}"
+        except NameError:
+            page_title = "Error"
+            page_content = f"## Error\n\n{str(request_exception)}"
+
+    # Return the page title and content for further use, or perform the rendering in your app
+    return page_title, page_content
+
+
+# You can now call this function like so:
 
 def get_resource(link:str):
     '''
