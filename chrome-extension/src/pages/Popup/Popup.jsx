@@ -1,27 +1,31 @@
 import React from 'react';
-import logo from '../../assets/img/logo.svg';
-import Greetings from '../../containers/Greetings/Greetings';
+import whiteDogLogo from '../../assets/img/whiteDogLogo.png'
 import './Popup.css';
 
-const Popup = () => {
+export default function Popup() {
+  const openMainApp = () => {
+    window.open('https://terrier-hunt.netlify.app/home', '_blank');
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/pages/Popup/Popup.jsx</code> and save to reload.
+    <div className="popup-container">
+      <div className="header">
+        <img src={whiteDogLogo} className="logo" alt="terrier pup logo" />
+        <h1 className="title">Terrier Pup</h1>
+      </div>
+      
+      <div className="content">
+        <p className="description">
+          Your faithful companion for seamless hunting on the web!
         </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
+        
+        <button 
+          className="cta-button"
+          onClick={openMainApp}
         >
-          Learn React!
-        </a>
-      </header>
+          🐾 Open Terrier App
+        </button>
+      </div>
     </div>
   );
 };
-
-export default Popup;
