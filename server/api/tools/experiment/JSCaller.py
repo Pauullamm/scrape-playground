@@ -4,7 +4,7 @@ import json
 import re
 from .JSReader import LoadJS, call_llm
 from dotenv import load_dotenv
-from .pocketflow_prompt import PF_INSPECTOR_PROMPT
+from .prompt import PF_INSPECTOR_PROMPT
 import ast
 
 load_dotenv()

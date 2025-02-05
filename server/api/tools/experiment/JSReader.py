@@ -5,7 +5,7 @@ import time
 import os
 from dotenv import load_dotenv
 import google.generativeai as genai
-from .pocketflow_prompt import PF_PARSER_PROMPT
+from .prompt import PF_PARSER_PROMPT
 
 load_dotenv()
 
