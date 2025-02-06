@@ -16,6 +16,10 @@ from tools.modController import modController
 from tools.utils import HTMLParser
 from tools.experiment.JSReader import reader_flow
 from tools.experiment.JSCaller import caller_flow
+import sys
+import os
+
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 logger = logging.getLogger(__name__)
 server_active = True
