@@ -163,7 +163,7 @@ export default function DocumentationPage() {
                                         <li>Export successful requests as templates</li>
                                     </ul>
                                     <button
-                                        onClick={() => navigate('/tools/network')}
+                                        onClick={() => navigate('/tools')}
                                         className="px-4 py-2 bg-[#00ADB5]/20 hover:bg-[#00ADB5]/30 text-[#00ADB5] rounded-lg transition-colors flex items-center text-sm"
                                     >
                                         Open Network Tool
@@ -188,7 +188,7 @@ export default function DocumentationPage() {
                                         <li>Generate code snippets in multiple languages</li>
                                     </ul>
                                     <button
-                                        onClick={() => navigate('/tools/api')}
+                                        onClick={() => navigate('/tools')}
                                         className="px-4 py-2 bg-[#00ADB5]/20 hover:bg-[#00ADB5]/30 text-[#00ADB5] rounded-lg transition-colors flex items-center text-sm"
                                     >
                                         Open API Workshop
@@ -213,7 +213,7 @@ export default function DocumentationPage() {
                                         <li>Generate CSS selector suggestions</li>
                                     </ul>
                                     <button
-                                        onClick={() => navigate('/tools/parser')}
+                                        onClick={() => navigate('/tools')}
                                         className="px-4 py-2 bg-[#00ADB5]/20 hover:bg-[#00ADB5]/30 text-[#00ADB5] rounded-lg transition-colors flex items-center text-sm"
                                     >
                                         Launch DOM Explorer
@@ -239,7 +239,7 @@ export default function DocumentationPage() {
                                         <li>Interactive execution monitoring</li>
                                     </ul>
                                     <button
-                                        onClick={() => navigate('/tools/automation')}
+                                        onClick={() => navigate('/tools')}
                                         className="px-4 py-2 bg-[#00ADB5]/20 hover:bg-[#00ADB5]/30 text-[#00ADB5] rounded-lg transition-colors flex items-center text-sm"
                                     >
                                         Try AI Automation
