@@ -30,12 +30,13 @@ origins = [
     "http://127.0.0.1:56084",
     "http://127.0.0.1:5173",
     "http://localhost:5173",
+    "https://terrier-hunt.netlify.app"
 ]
 # Initialize the FastAPI app
 app = FastAPI()
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"]
