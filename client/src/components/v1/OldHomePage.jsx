@@ -26,7 +26,7 @@ export default function HomePage() {
 
     const keys = useSelector((state) => state.settings);
     const API_KEY = keys.openaiKey;
-    const BACKEND_URL = "http://127.0.0.1:5000"
+    const BACKEND_URL = import.meta.env.VITE_BACKEND_URL
 
     // Save messages to localStorage whenever they change
     useEffect(() => {

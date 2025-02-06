@@ -7,7 +7,7 @@ export default function HTMLParser2({ state, setState }) {
     const [llmOutput, setLlmOutput] = useState(state.llmOutput || null);
     const [callerOutput, setCallerOutput] = useState(state.callerOutput || null);
 
-    const BACKEND_URL = "http://127.0.0.1:5000";
+    const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
     const handleAnalyze = async () => {
         setLoading(true);

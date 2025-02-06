@@ -6,6 +6,9 @@ import os
 from dotenv import load_dotenv
 import google.generativeai as genai
 from .prompt import PF_PARSER_PROMPT
+import logging
+
+logger = logging.getLogger(__name__)
 
 load_dotenv()
 
@@ -111,7 +114,7 @@ def pre_process(link:str) -> list[str]:
         
         return split_text
     except Exception as e:
-        print(f'Error retrieving content: {str(e)}')
+        logger.info(f'Error retrieving content: {str(e)}')
         
 def retrieve_js_content(url: str) -> any:
     '''

@@ -12,7 +12,7 @@ export default function BrowserAutomation() {
   const scrollToBottom = () => {
     historyEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
-
+  const BACKEND_URL = import.meta.env.VITE_BACKEND_URL
   const connectWebSocket = () => {
     // Close existing connection if it exists
     if (ws.current) {
@@ -20,7 +20,7 @@ export default function BrowserAutomation() {
     }
 
     // Connect to WebSocket
-    ws.current = new WebSocket('ws://127.0.0.1:5000/ws');
+    ws.current = new WebSocket(`ws://${BACKEND_URL}/ws`);
 
     ws.current.onopen = () => {
       setStatus('Connected - Ready for commands');

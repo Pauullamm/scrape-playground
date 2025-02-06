@@ -6,6 +6,10 @@ from .JSReader import LoadJS, call_llm
 from dotenv import load_dotenv
 from .prompt import PF_INSPECTOR_PROMPT
 import ast
+import logging
+
+logger = logging.getLogger(__name__)
+
 
 load_dotenv()
 
@@ -29,7 +33,6 @@ def return_js_variable(url: str, variable_name: str) -> any:
             if variable_name in script:
                 # Extract the variable using regex
                 escaped_name = re.escape(variable_name)
-                print(escaped_name)
                 match = re.search(rf"{escaped_name}\s*=\s*({{.*?}}|\[.*?\])", script, re.DOTALL)
                 if match:
                     try:
@@ -38,7 +41,7 @@ def return_js_variable(url: str, variable_name: str) -> any:
                         return data
                     except json.JSONDecodeError:
                         # Could not parse, might need further handling
-                        print('Could not parse variable as json')
+                        logger.info('Could not parse variable as json')
 
         browser.close()
         return None
@@ -52,7 +55,7 @@ def return_var(url: str, var_name: str) -> any:
             content = page.evaluate(f"() => window.{var_name}")
             return content
         except Exception as e:
-            print(f'Could not parse JS variable: {var_name}')
+            logger.info(f'Could not parse JS variable: {var_name}')
             return None    
     
     browser.close()
@@ -81,7 +84,6 @@ class VarCaller(Node):
             raise ValueError("No valid JS variables found in the provided string.")
         
         var_str = match.group(0).strip()  # Remove any leading/trailing whitespace
-        print(f'Matched variables string: {var_str}')
 
         try:
             # Safely parse the matched string into a Python list
@@ -89,7 +91,7 @@ class VarCaller(Node):
         except SyntaxError as e:
             raise ValueError(f"Failed to parse variables: {e}")
 
-        print(f'Parsed variables: {var}')
+        logger.info(f'Parsed variables: {var}')
         
         url = shared["url"]
         content = {}
@@ -102,8 +104,10 @@ class VarCaller(Node):
     
     def exec(self, prep_res):
         # Write results to output.json
-        with open('output.json', 'w') as f:
-            json.dump(prep_res, f, indent=4)
+        # with open('output.json', 'w') as f:
+        #     json.dump(prep_res, f, indent=4)
+        logger.info(f"JS parsing result: {prep_res}")
+        pass
     
     def exec_fallback(self, prep_res, exc):
         return super().exec_fallback(prep_res, exc)
