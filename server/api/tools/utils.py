@@ -10,7 +10,7 @@ import logging
 from json5 import loads as json5_loads
 from bs4 import BeautifulSoup
 from typing import List, Dict, Union
-from tools.cookiegetter import cookiegetter
+from ..tools.cookiegetter import cookiegetter
 
 logger = logging.getLogger(__name__)
 

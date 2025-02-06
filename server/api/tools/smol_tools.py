@@ -1,5 +1,5 @@
 from smolagents import tool
-from tools.cookiegetter import cookiegetter
+from ..tools.cookiegetter import cookiegetter
 import requests
 from playwright.sync_api import sync_playwright
 import re
