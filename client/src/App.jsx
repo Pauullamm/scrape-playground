@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import SettingsPage from './components/SettingsPage';
+import SettingsPage from './components/pages/SettingsPage';
 import ToolsPage from './components/pages/ToolsPage';
-import HomePage from './components/pages/HomePage';
+import DocumentationPage from './components/pages/DocumentationPage';
 import Navbar from './components/Navbar';
 import LandingPage from './components/pages/LandingPage';
 import AuthPage from './components/pages/AuthPage';
@@ -19,7 +19,7 @@ export default function App() {
         {session ? <Navbar supabaseClient={supabase} setSession={setSession}/> : <></>}
         <Routes>
           <Route path='/' element={<LandingPage />} />
-          <Route path="/home" element={session ? <HomePage /> : <AuthPage supabaseClient={supabase} setSession={setSession}/>} />
+          <Route path="/home" element={session ? <DocumentationPage /> : <AuthPage supabaseClient={supabase} setSession={setSession}/>} />
           <Route path="/tools" element={session ? <ToolsPage /> : <AuthPage supabaseClient={supabase} setSession={setSession}/>} />
           <Route path='/settings' element={session ? <SettingsPage /> : <AuthPage supabaseClient={supabase} setSession={setSession}/>} />
         </Routes>

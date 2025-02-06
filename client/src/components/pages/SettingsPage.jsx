@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
-import { updateSettings } from '../store/settingsSlice';
+import { updateSettings } from '../../store/settingsSlice';
 
 export default function SettingsPage({
     settings = {
@@ -81,7 +81,6 @@ export default function SettingsPage({
                         >
                             <option value="openai">OpenAI</option>
                             <option value="gemini">Google Gemini</option>
-                            <option value="claude">Anthropic Claude</option>
                             <option value="huggingface">Hugging Face (Custom)</option>
                         </select>
                     </div>
@@ -120,15 +119,6 @@ export default function SettingsPage({
                                 type="password"
                                 name="geminiKey"
                                 defaultValue={settings.geminiKey}
-                                className="w-full bg-gray-900 border border-gray-700 rounded-lg p-2"
-                            />
-                        </div>
-                        <div>
-                            <label className="block text-sm font-medium mb-2">Anthropic Claude API Key</label>
-                            <input
-                                type="password"
-                                name="claudeKey"
-                                defaultValue={settings.claudeKey}
                                 className="w-full bg-gray-900 border border-gray-700 rounded-lg p-2"
                             />
                         </div>

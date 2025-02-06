@@ -21,7 +21,7 @@ export default function Navbar({ supabaseClient, setSession }) {
                     <Link to="/home" className="flex items-center gap-1 bg-opacity-40 hover:opacity-80 transition-opacity">
                         <h1 className="text-3xl font-extrabold">Terrier</h1>
                         <img
-                            src='white-dog-logo.png'
+                            src='whiteDog.png'
                             className="h-8 w-8 ml-1"
                             alt="Terrier logo"
                         />
