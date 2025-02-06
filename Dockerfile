@@ -15,7 +15,7 @@ RUN pip install --upgrade pip && \
 #     ├── api
 #     │   └── main.py
 #     └── (other directories/files)
-COPY . .
+COPY server ./
 
 # Expose the port that your FastAPI app will run on
 EXPOSE 5000
