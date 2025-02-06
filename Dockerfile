@@ -7,7 +7,8 @@ WORKDIR /server
 # Upgrade pip and install dependencies
 COPY server/requirements.txt ./
 RUN pip install --upgrade pip && \
-    pip install --no-cache-dir -r requirements.txt
+    pip install --no-cache-dir -r requirements.txt && \
+    playwright install
 
 # Copy in the entire project (adjust as needed)
 # This assumes your directory structure looks like:
