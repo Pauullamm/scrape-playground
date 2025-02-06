@@ -22,7 +22,8 @@ Terrier AI combines web scraping tools with AI agents to simplify data extractio
 
 ### (New!) Chrome Extension - Terrier Pup
 - Coming Soon
-- 
+
+
 ## Getting Started 🚀
 
 ### Prerequisites
