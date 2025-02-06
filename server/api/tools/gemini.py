@@ -1,8 +1,8 @@
 from dotenv import load_dotenv
 import os
-from tools.Terrier_Agents import GeminiAgent, ParserAgent
-from tools.Agent_Tools import actions
-from tools.prompt import PARSER_AGENT_PROMPT
+from ..tools.Terrier_Agents import GeminiAgent, ParserAgent
+from ..tools.Agent_Tools import actions
+from ..tools.prompt import PARSER_AGENT_PROMPT
 
 load_dotenv()
 

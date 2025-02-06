@@ -1,7 +1,7 @@
 from smolagents import CodeAgent, LiteLLMModel
 import os
 from dotenv import load_dotenv
-from tools.smol_tools import retrieve_js_content, output_content, get_resource, return_js_variable
+from ..tools.smol_tools import retrieve_js_content, output_content, get_resource, return_js_variable
 from prompt import SMOL_PARSER_SYSTEM_PROMPT
 
 load_dotenv()

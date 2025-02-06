@@ -1,7 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
-from tools.utils import ScraperTool, HTMLParser
-from tools.cookiegetter import cookiegetter
+from ..tools.utils import ScraperTool, HTMLParser
+from ..tools.cookiegetter import cookiegetter
 import re
 import os
 from urllib.parse import unquote, urljoin, urlparse
