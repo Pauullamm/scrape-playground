@@ -4,18 +4,18 @@ from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 import uvicorn
-from tools.Terrier_Agents import DeepSeekAgent
-from tools.prompt import GENERAL_AGENT_PROMPT
-from tools.Agent_Tools import scrape_background_requests, actions
+from .tools.Terrier_Agents import DeepSeekAgent
+from .tools.prompt import GENERAL_AGENT_PROMPT
+from .tools.Agent_Tools import scrape_background_requests, actions
 from load_dotenv import load_dotenv
 import os
 import logging
 from langchain_ollama import ChatOllama
-from tools.modAgent import modAgent
-from tools.modController import modController
-from tools.utils import HTMLParser
-from tools.experiment.JSReader import reader_flow
-from tools.experiment.JSCaller import caller_flow
+from .tools.modAgent import modAgent
+from .tools.modController import modController
+from .tools.utils import HTMLParser
+from .tools.experiment.JSReader import reader_flow
+from .tools.experiment.JSCaller import caller_flow
 import sys
 import os
 
