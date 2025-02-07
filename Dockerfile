@@ -44,7 +44,7 @@ RUN curl -sSL https://dl.google.com/linux/direct/google-chrome-stable_current_am
     rm -rf /var/lib/apt/lists/*
 # Install ChromeDriver (match version with installed Chrome)
 
-ENV CHROME_DRIVER_VERSION=124.0.6367.91
+ENV CHROME_DRIVER_VERSION=114.0.5735.90
 RUN curl -sSL https://chromedriver.storage.googleapis.com/$CHROME_DRIVER_VERSION/chromedriver_linux64.zip -o chromedriver.zip \
     && unzip chromedriver.zip \
     && mv chromedriver /usr/local/bin/ \
