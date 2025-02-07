@@ -23,11 +23,28 @@ RUN apt-get update && \
     libwayland-client0 \
     # Optional: Add ffmpeg if needed for pydub
     ffmpeg \
+    && rm -rf /var/lib/apt/lists/* \
+    # Install Google Chrome
+    && curl -sSL https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb -o chrome.deb \
+    && apt-get install -y ./chrome.deb \
+    && rm chrome.deb \
+    # Cleanup
     && rm -rf /var/lib/apt/lists/*
 
 
 # Set playwright browser path
 ENV PLAYWRIGHT_BROWSERS_PATH=/app/playwright-browsers
+# Install ChromeDriver (match version with installed Chrome)
+
+ENV CHROME_DRIVER_VERSION=124.0.6367.91
+RUN curl -sSL https://chromedriver.storage.googleapis.com/$CHROME_DRIVER_VERSION/chromedriver_linux64.zip -o chromedriver.zip \
+    && unzip chromedriver.zip \
+    && mv chromedriver /usr/local/bin/ \
+    && chmod +x /usr/local/bin/chromedriver \
+    && rm chromedriver.zip
+
+    # Configure environment
+ENV PATH="/usr/local/bin/chromedriver:${PATH}"
 
 # Set the working directory inside the container
 WORKDIR /server
