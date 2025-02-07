@@ -52,7 +52,7 @@ RUN CHROME_VERSION=$(google-chrome --version | awk '{print $3}') && \
     fi && \
     echo "Using ChromeDriver Version: $CHROMEDRIVER_VERSION" && \
     curl -sSL "https://storage.googleapis.com/chrome-for-testing-public/$CHROMEDRIVER_VERSION/linux64/chromedriver-linux64.zip" -o chromedriver.zip && \
-    unzip chromedriver.zip -d /usr/local/bin/ && \
+    unzip -j chromedriver.zip -d /usr/local/bin/ && \
     chmod +x /usr/local/bin/chromedriver && \
     rm chromedriver.zip
 # Configure environment (Ensure ChromeDriver is in the system path)
