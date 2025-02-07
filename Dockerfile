@@ -5,6 +5,12 @@ FROM python:3.13-slim
 RUN apt-get update && \
     apt-get install -y \
     curl \
+    gnupg \
+    ca-certificates \
+    fonts-liberation \
+    libgtk-3-0 \
+    wget \
+    xdg-utils \
     libnss3 \
     libnspr4 \
     libatk1.0-0 \
@@ -24,17 +30,17 @@ RUN apt-get update && \
     libwayland-client0 \
     # Optional: Add ffmpeg if needed for pydub
     ffmpeg \
-    && rm -rf /var/lib/apt/lists/* \
-    # Install Google Chrome
-    && curl -sSL https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb -o chrome.deb \
-    && apt-get install -y ./chrome.deb \
-    && rm chrome.deb \
-    # Cleanup
     && rm -rf /var/lib/apt/lists/*
-
 
 # Set playwright browser path
 ENV PLAYWRIGHT_BROWSERS_PATH=/app/playwright-browsers
+
+# Download and install Google Chrome.
+# We use dpkg -i to install and then fix any broken dependencies.
+RUN curl -sSL https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb -o chrome.deb && \
+    dpkg -i chrome.deb || apt-get install -y --no-install-recommends -f && \
+    rm chrome.deb && \
+    rm -rf /var/lib/apt/lists/*
 # Install ChromeDriver (match version with installed Chrome)
 
 ENV CHROME_DRIVER_VERSION=124.0.6367.91
