@@ -1,4 +1,4 @@
-# Terrier AI - Your Web Scraping Companion 🐕
+# Terrier AI - Your Web Scraping Companion 🐕 [![Netlify Status](https://api.netlify.com/api/v1/badges/ee4d5468-c54e-4c70-8711-02cc2115339b/deploy-status)](https://app.netlify.com/sites/terrier-hunt/deploys)
 
 Terrier AI combines web scraping tools with AI agents to simplify data extraction. Our platform aims to automate tedious data collection tasks while maintaining compliance with website policies.
 
