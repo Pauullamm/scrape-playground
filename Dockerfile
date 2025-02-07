@@ -29,42 +29,25 @@ RUN apt-get update && \
     libasound2 \
     libatspi2.0-0 \
     libwayland-client0 \
-    # Optional: Add ffmpeg if needed for pydub
     ffmpeg \
     && rm -rf /var/lib/apt/lists/*
 
-# Set playwright browser path
-ENV PLAYWRIGHT_BROWSERS_PATH=/app/playwright-browsers
-
-# Download and install Google Chrome.
-# We use dpkg -i to install and then fix any broken dependencies.
-# RUN curl -sSL https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb -o chrome.deb && \
-#     dpkg -i chrome.deb || apt-get install -y --no-install-recommends -f && \
-#     rm chrome.deb && \
-#     rm -rf /var/lib/apt/lists/*
-
+# Install Google Chrome from the official repository
 RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - && \
-echo "deb http://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google-chrome.list && \
-apt-get update && \
-apt-get install -y google-chrome-stable
+    echo "deb http://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google-chrome.list && \
+    apt-get update && \
+    apt-get install -y google-chrome-stable
 
-# Install ChromeDriver (match version with installed Chrome)
-
-# Find installed Chrome version and get the matching ChromeDriver
 # Verify Chrome installation
 RUN google-chrome --version
 
 # Install the correct version of ChromeDriver
-# Verify Chrome installation
-RUN google-chrome --version
-
-# Install the closest matching ChromeDriver version
 RUN CHROME_VERSION=$(google-chrome --version | awk '{print $3}') && \
     CHROME_MAJOR_VERSION=$(echo $CHROME_VERSION | cut -d. -f1) && \
     echo "Detected Chrome Version: $CHROME_VERSION (Major: $CHROME_MAJOR_VERSION)" && \
-    CHROMEDRIVER_VERSION=$(curl -sS "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_$CHROME_MAJOR_VERSION" || echo "") && \
+    CHROMEDRIVER_VERSION=$(curl -sS "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_$CHROME_MAJOR_VERSION") && \
     if [ -z "$CHROMEDRIVER_VERSION" ]; then \
-        CHROMEDRIVER_VERSION=$(curl -sS "https://chromedriver.storage.googleapis.com/LATEST_RELEASE"); \
+        echo "ERROR: No matching ChromeDriver found for Chrome version $CHROME_MAJOR_VERSION" && exit 1; \
     fi && \
     echo "Using ChromeDriver Version: $CHROMEDRIVER_VERSION" && \
     curl -sSL "https://chromedriver.storage.googleapis.com/$CHROMEDRIVER_VERSION/chromedriver_linux64.zip" -o chromedriver.zip && \
@@ -72,8 +55,8 @@ RUN CHROME_VERSION=$(google-chrome --version | awk '{print $3}') && \
     chmod +x /usr/local/bin/chromedriver && \
     rm chromedriver.zip
 
-    # Configure environment
-# ENV PATH="/usr/bin/chromedriver:${PATH}"
+# Configure environment (Ensure ChromeDriver is in the system path)
+ENV PATH="/usr/local/bin:${PATH}"
 
 # Set the working directory inside the container
 WORKDIR /server
@@ -85,11 +68,6 @@ RUN pip install --upgrade pip && \
     playwright install --with-deps chromium
 
 # Copy in the entire project (adjust as needed)
-# This assumes your directory structure looks like:
-# └── server
-#     ├── api
-#     │   └── main.py
-#     └── (other directories/files)
 COPY server ./
 
 # Expose the port that your FastAPI app will run on
@@ -106,5 +84,4 @@ RUN adduser \
 USER appuser
 
 # Start the FastAPI app using uvicorn.
-# Since main.py is in /server/api and contains "app", the module path is "api.main:app"
 CMD ["uvicorn", "api.main:app", "--host", "0.0.0.0", "--port", "5000"]
