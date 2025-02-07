@@ -55,17 +55,25 @@ apt-get install -y google-chrome-stable
 RUN google-chrome --version
 
 # Install the correct version of ChromeDriver
-RUN export CHROME_VERSION=$(google-chrome --version | awk '{print $3}' | cut -d. -f1) && \
-    echo "Detected Chrome Version: $CHROME_VERSION" && \
-    CHROMEDRIVER_VERSION=$(curl -sS "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_$CHROME_VERSION") && \
-    echo "Detected ChromeDriver Version: $CHROMEDRIVER_VERSION" && \
+# Verify Chrome installation
+RUN google-chrome --version
+
+# Install the closest matching ChromeDriver version
+RUN CHROME_VERSION=$(google-chrome --version | awk '{print $3}') && \
+    CHROME_MAJOR_VERSION=$(echo $CHROME_VERSION | cut -d. -f1) && \
+    echo "Detected Chrome Version: $CHROME_VERSION (Major: $CHROME_MAJOR_VERSION)" && \
+    CHROMEDRIVER_VERSION=$(curl -sS "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_$CHROME_MAJOR_VERSION" || echo "") && \
+    if [ -z "$CHROMEDRIVER_VERSION" ]; then \
+        CHROMEDRIVER_VERSION=$(curl -sS "https://chromedriver.storage.googleapis.com/LATEST_RELEASE"); \
+    fi && \
+    echo "Using ChromeDriver Version: $CHROMEDRIVER_VERSION" && \
     curl -sSL "https://chromedriver.storage.googleapis.com/$CHROMEDRIVER_VERSION/chromedriver_linux64.zip" -o chromedriver.zip && \
     unzip chromedriver.zip -d /usr/local/bin/ && \
     chmod +x /usr/local/bin/chromedriver && \
     rm chromedriver.zip
 
     # Configure environment
-ENV PATH="/usr/bin/chromedriver:${PATH}"
+# ENV PATH="/usr/bin/chromedriver:${PATH}"
 
 # Set the working directory inside the container
 WORKDIR /server
