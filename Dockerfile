@@ -38,24 +38,21 @@ ENV PLAYWRIGHT_BROWSERS_PATH=/app/playwright-browsers
 
 # Download and install Google Chrome.
 # We use dpkg -i to install and then fix any broken dependencies.
-# Add the Google Chrome repository and install Chrome
-RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - && \
-    echo "deb http://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google-chrome.list && \
-    apt-get update && \
-    apt-get install -y google-chrome-stable && \
+RUN curl -sSL https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb -o chrome.deb && \
+    dpkg -i chrome.deb || apt-get install -y --no-install-recommends -f && \
+    rm chrome.deb && \
     rm -rf /var/lib/apt/lists/*
-
 # Install ChromeDriver (match version with installed Chrome)
 
 ENV CHROME_DRIVER_VERSION=114.0.5735.90
 RUN curl -sSL https://chromedriver.storage.googleapis.com/$CHROME_DRIVER_VERSION/chromedriver_linux64.zip -o chromedriver.zip \
     && unzip chromedriver.zip \
     && mv chromedriver /usr/bin/ \
-    && chmod +x /usr/local/bin/chromedriver \
+    && chmod +x /usr/bin/chromedriver \
     && rm chromedriver.zip
 
     # Configure environment
-ENV PATH="/usr/local/bin/chromedriver:${PATH}"
+ENV PATH="/usr/bin/chromedriver:${PATH}"
 
 # Set the working directory inside the container
 WORKDIR /server
