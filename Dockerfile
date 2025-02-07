@@ -7,6 +7,7 @@ RUN apt-get update && \
     curl \
     gnupg \
     ca-certificates \
+    unzip \
     fonts-liberation \
     libgtk-3-0 \
     wget \
