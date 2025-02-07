@@ -41,16 +41,17 @@ RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key
 # Verify Chrome installation
 RUN google-chrome --version
 
-# Install the correct version of ChromeDriver
+# Install the closest matching ChromeDriver version
 RUN CHROME_VERSION=$(google-chrome --version | awk '{print $3}') && \
     CHROME_MAJOR_VERSION=$(echo $CHROME_VERSION | cut -d. -f1) && \
     echo "Detected Chrome Version: $CHROME_VERSION (Major: $CHROME_MAJOR_VERSION)" && \
-    CHROMEDRIVER_VERSION=$(curl -sS "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_$CHROME_MAJOR_VERSION") && \
+    CHROMEDRIVER_VERSION=$(curl -sS https://googlechromelabs.github.io/chrome-for-testing/LATEST_RELEASE_$CHROME_MAJOR_VERSION || echo "") && \
     if [ -z "$CHROMEDRIVER_VERSION" ]; then \
-        echo "ERROR: No matching ChromeDriver found for Chrome version $CHROME_MAJOR_VERSION" && exit 1; \
+        echo "No exact match for ChromeDriver version $CHROME_MAJOR_VERSION, using latest available version"; \
+        CHROMEDRIVER_VERSION=$(curl -sS https://googlechromelabs.github.io/chrome-for-testing/LATEST_RELEASE); \
     fi && \
     echo "Using ChromeDriver Version: $CHROMEDRIVER_VERSION" && \
-    curl -sSL "https://chromedriver.storage.googleapis.com/$CHROMEDRIVER_VERSION/chromedriver_linux64.zip" -o chromedriver.zip && \
+    curl -sSL "https://storage.googleapis.com/chrome-for-testing-public/$CHROME_MAJOR_VERSION/chromedriver-linux64.zip" -o chromedriver.zip && \
     unzip chromedriver.zip -d /usr/local/bin/ && \
     chmod +x /usr/local/bin/chromedriver && \
     rm chromedriver.zip
@@ -79,9 +80,9 @@ RUN adduser \
     --no-create-home \
     --uid 1000 \
     appuser && \
-    chown -R appuser:appuser $PLAYWRIGHT_BROWSERS_PATH
+    chown -R appuser:appuser /server
 
 USER appuser
 
-# Start the FastAPI app using uvicorn.
+# Start the FastAPI app using uvicorn
 CMD ["uvicorn", "api.main:app", "--host", "0.0.0.0", "--port", "5000"]
