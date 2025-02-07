@@ -13,11 +13,11 @@ import logging
 from langchain_ollama import ChatOllama
 from .tools.modAgent import modAgent
 from .tools.modController import modController
-from .tools.utils import HTMLParser
 from .tools.experiment.JSReader import reader_flow
 from .tools.experiment.JSCaller import caller_flow
 import sys
 import os
+import json
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
@@ -141,6 +141,8 @@ def background_capture(message_body: MessageBody):
 
         back_data = scrape_background_requests(message_body.message)
         # logger.info(data)
+        with open('output.json', 'w') as f:
+            json.dump(back_data, f, indent=4)
         return JSONResponse(
             content=jsonable_encoder(back_data)
         )    
@@ -204,5 +206,5 @@ async def shutdown_server():
 if __name__ == "__main__":
     import sys
     if "uvicorn" not in sys.argv[0]:
-        uvicorn.run("main:app", host="127.0.0.1", port=5000, log_level="info", reload=True)
+        uvicorn.run("main:app", host="127.0.0.1", port=8000, log_level="info", reload=True)
    

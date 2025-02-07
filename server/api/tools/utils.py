@@ -2,7 +2,6 @@ import requests, json, time
 from urllib3.exceptions import TimeoutError, ConnectionError
 from bs4 import BeautifulSoup
 from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.chrome.service import Service
 from seleniumwire import webdriver as wire_webdriver
 from selenium.webdriver.support.wait import WebDriverWait
 from seleniumwire.utils import decode
@@ -150,10 +149,7 @@ class ScraperTool:
         self.proxy_url = None
         self.entries = []
         self.chrome_options = Options()
-        # Explicitly specify the Chrome binary path for docker
-        self.chrome_options.binary_location = "/usr/bin/google-chrome"
-
-        self.chrome_options.add_argument('--headless')  # Optional: run Chrome in headless mode
+        self.chrome_options.add_argument('--headless=new')  # Optional: run Chrome in headless mode
         self.chrome_options.add_argument('--disable-gpu')  # Disable GPU acceleration
         self.chrome_options.set_capability('goog:loggingPrefs', {'performance': 'ALL'})
         self.chrome_options.add_argument('--disable-blink-features=AutomationControlled')
@@ -258,13 +254,7 @@ class ScraperTool:
             r'(?:const|let|var)\s+(\w+)\s*=\s*({.*?})\s*(?=;|,|\n|\r)',  # Added capture group around object
             re.DOTALL
         )
-
-        # Set ChromeDriver path for docker
-        chrome_driver_path = "/usr/local/bin/chromedriver"
-        service = Service(chrome_driver_path)
-        #--------------------------------------------
         driver = wire_webdriver.Chrome(
-            service=service,
             options=self.chrome_options,
             seleniumwire_options={
                 'disable_encoding': True,
@@ -385,7 +375,8 @@ class ScraperTool:
                 # Save the network requests to a JSON file
             with open('network_requests.json', 'w') as f:
                 json.dump(requests_data, f, indent=4, default=serialize)
-            return requests_data
+                
+            return serialize(requests_data)
         except Exception as e:
             logging.error(f'Error saving network requests: {str(e)}')
         finally:

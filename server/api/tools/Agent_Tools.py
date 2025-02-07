@@ -169,7 +169,7 @@ def scrape_background_requests(url:str):
     '''
     scraper = ScraperTool()
     background_request_data = scraper.capture_bg_responses(url)
-    return str(background_request_data)
+    return background_request_data
 
 def take_screenshot(url:str):
     '''
