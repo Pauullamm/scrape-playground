@@ -4,6 +4,7 @@ FROM python:3.13-slim
 # Install system dependencies required by Playwright
 RUN apt-get update && \
     apt-get install -y \
+    curl \
     libnss3 \
     libnspr4 \
     libatk1.0-0 \

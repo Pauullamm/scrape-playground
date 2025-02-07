@@ -17,7 +17,7 @@ export default defineConfig(({ mode }) => {
     },
     plugins: [
       react(),
-      mode == 'production' && obfuscatorPlugin({
+      ...(mode === 'production' ? [obfuscatorPlugin({
         include: ['src/**/*.js', 'src/**/*.jsx', 'src/**/*.ts', 'src/**/*.tsx'],
         exclude: [
           'src/supabaseClient/supabaseClient.js',
@@ -31,9 +31,8 @@ export default defineConfig(({ mode }) => {
         stringArrayShuffle: true,
         splitStrings: true,
         stringArrayThreshold: 1,
-        // NEW: Ignore environment variables in obfuscation
-        ignoreRequireImports: true,
-      }).filter(Boolean),
+        ignoreRequireImports: true, // Prevents obfuscation of env vars
+      })] : []), // Only include in production
     ],
     optimizeDeps: {
       exclude: ['lucide-react'],
