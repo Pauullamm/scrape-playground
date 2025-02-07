@@ -50,12 +50,13 @@ apt-get install -y google-chrome-stable
 
 # Install ChromeDriver (match version with installed Chrome)
 
-ENV CHROME_DRIVER_VERSION=114.0.5735.90
-RUN curl -sSL https://chromedriver.storage.googleapis.com/$CHROME_DRIVER_VERSION/chromedriver_linux64.zip -o chromedriver.zip \
-    && unzip chromedriver.zip \
-    && mv chromedriver /usr/bin/ \
-    && chmod +x /usr/bin/chromedriver \
-    && rm chromedriver.zip
+# Find installed Chrome version and get the matching ChromeDriver
+RUN CHROME_VERSION=$(google-chrome --version | awk '{print $3}' | cut -d. -f1) && \
+    CHROMEDRIVER_VERSION=$(curl -sS https://chromedriver.storage.googleapis.com/LATEST_RELEASE_$CHROME_VERSION) && \
+    curl -sSL https://chromedriver.storage.googleapis.com/$CHROMEDRIVER_VERSION/chromedriver_linux64.zip -o chromedriver.zip && \
+    unzip chromedriver.zip -d /usr/local/bin/ && \
+    chmod +x /usr/local/bin/chromedriver && \
+    rm chromedriver.zip
 
     # Configure environment
 ENV PATH="/usr/bin/chromedriver:${PATH}"
