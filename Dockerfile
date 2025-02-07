@@ -1,7 +1,7 @@
 # Use an official Python runtime as the base image
 FROM python:3.13-slim
 
-# Install system dependencies required by Playwright
+# Install system dependencies required by Playwright and Chrome
 RUN apt-get update && \
     apt-get install -y \
     curl \
@@ -29,30 +29,24 @@ RUN apt-get update && \
     libasound2 \
     libatspi2.0-0 \
     libwayland-client0 \
-    # Optional: Add ffmpeg if needed for pydub
     ffmpeg \
     && rm -rf /var/lib/apt/lists/*
 
-# Set playwright browser path
-ENV PLAYWRIGHT_BROWSERS_PATH=/app/playwright-browsers
-
-# Download and install Google Chrome.
-# We use dpkg -i to install and then fix any broken dependencies.
-RUN curl -sSL https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb -o chrome.deb && \
-    dpkg -i chrome.deb || apt-get install -y --no-install-recommends -f && \
-    rm chrome.deb && \
+# Add the Google Chrome repository and install Chrome
+RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - && \
+    echo "deb http://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google-chrome.list && \
+    apt-get update && \
+    apt-get install -y google-chrome-stable && \
     rm -rf /var/lib/apt/lists/*
-# Install ChromeDriver (match version with installed Chrome)
 
-ENV CHROME_DRIVER_VERSION=114.0.5735.90
-RUN curl -sSL https://chromedriver.storage.googleapis.com/$CHROME_DRIVER_VERSION/chromedriver_linux64.zip -o chromedriver.zip \
-    && unzip chromedriver.zip \
-    && mv chromedriver /usr/local/bin/ \
-    && chmod +x /usr/local/bin/chromedriver \
-    && rm chromedriver.zip
-
-    # Configure environment
-ENV PATH="/usr/local/bin/chromedriver:${PATH}"
+# Install ChromeDriver (ensure the version matches the installed Chrome version)
+RUN CHROME_VERSION=$(google-chrome --product-version | grep -oE '[0-9]+\.[0-9]+\.[0-9]+') && \
+    CHROMEDRIVER_VERSION=$(curl -sS chromedriver.storage.googleapis.com/LATEST_RELEASE_$CHROME_VERSION) && \
+    curl -sSL https://chromedriver.storage.googleapis.com/$CHROMEDRIVER_VERSION/chromedriver_linux64.zip -o chromedriver.zip && \
+    unzip chromedriver.zip && \
+    mv chromedriver /usr/local/bin/chromedriver && \
+    chmod +x /usr/local/bin/chromedriver && \
+    rm chromedriver.zip
 
 # Set the working directory inside the container
 WORKDIR /server
@@ -63,12 +57,7 @@ RUN pip install --upgrade pip && \
     pip install --no-cache-dir -r requirements.txt && \
     playwright install --with-deps chromium
 
-# Copy in the entire project (adjust as needed)
-# This assumes your directory structure looks like:
-# └── server
-#     ├── api
-#     │   └── main.py
-#     └── (other directories/files)
+# Copy in the entire project
 COPY server ./
 
 # Expose the port that your FastAPI app will run on
@@ -80,10 +69,9 @@ RUN adduser \
     --no-create-home \
     --uid 1000 \
     appuser && \
-    chown -R appuser:appuser $PLAYWRIGHT_BROWSERS_PATH
+    chown -R appuser:appuser /server
 
 USER appuser
 
-# Start the FastAPI app using uvicorn.
-# Since main.py is in /server/api and contains "app", the module path is "api.main:app"
+# Start the FastAPI app using uvicorn
 CMD ["uvicorn", "api.main:app", "--host", "0.0.0.0", "--port", "5000"]

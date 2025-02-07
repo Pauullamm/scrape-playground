@@ -39,7 +39,6 @@ export default function RequestCapture({ state, setState }) {
       // Parse the response data from your backend
       const data = await response.json();
       if (data) {
-        console.log(data)
         const row_data = []
         for (let i=0; i < data.length; i++) {
           var item = data[i]
