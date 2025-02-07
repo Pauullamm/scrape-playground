@@ -51,9 +51,15 @@ apt-get install -y google-chrome-stable
 # Install ChromeDriver (match version with installed Chrome)
 
 # Find installed Chrome version and get the matching ChromeDriver
-RUN CHROME_VERSION=$(google-chrome --version | awk '{print $3}' | cut -d. -f1) && \
-    CHROMEDRIVER_VERSION=$(curl -sS https://chromedriver.storage.googleapis.com/LATEST_RELEASE_$CHROME_VERSION) && \
-    curl -sSL https://chromedriver.storage.googleapis.com/$CHROMEDRIVER_VERSION/chromedriver_linux64.zip -o chromedriver.zip && \
+# Verify Chrome installation
+RUN google-chrome --version
+
+# Install the correct version of ChromeDriver
+RUN export CHROME_VERSION=$(google-chrome --version | awk '{print $3}' | cut -d. -f1) && \
+    echo "Detected Chrome Version: $CHROME_VERSION" && \
+    CHROMEDRIVER_VERSION=$(curl -sS "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_$CHROME_VERSION") && \
+    echo "Detected ChromeDriver Version: $CHROMEDRIVER_VERSION" && \
+    curl -sSL "https://chromedriver.storage.googleapis.com/$CHROMEDRIVER_VERSION/chromedriver_linux64.zip" -o chromedriver.zip && \
     unzip chromedriver.zip -d /usr/local/bin/ && \
     chmod +x /usr/local/bin/chromedriver && \
     rm chromedriver.zip
