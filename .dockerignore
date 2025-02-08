@@ -1,0 +1,40 @@
+# Node.js dependencies
+node_modules
+npm-debug.log
+yarn.lock
+pnpm-lock.yaml
+
+# Vite build output
+dist/
+.vite
+
+# TypeScript build artifacts
+*.tsbuildinfo
+
+# Python dependencies & virtual environments
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+venv/
+.env
+.env.local
+Pipfile.lock
+poetry.lock
+
+# Docker-related files
+.dockerignore
+Dockerfile
+docker-compose.yml
+
+# Version control & editor configs
+.git
+.gitignore
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS-specific files
+.DS_Store
+Thumbs.db
