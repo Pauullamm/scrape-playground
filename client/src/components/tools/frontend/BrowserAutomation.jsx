@@ -20,7 +20,7 @@ export default function BrowserAutomation() {
     }
 
     // Connect to WebSocket
-    ws.current = new WebSocket(`ws://${BACKEND_URL}/ws`);
+    ws.current = new WebSocket(`wss://${BACKEND_URL}/ws`);
 
     ws.current.onopen = () => {
       setStatus('Connected - Ready for commands');
