@@ -17,6 +17,8 @@ from .tools.experiment.JSReader import reader_flow
 from .tools.experiment.JSCaller import caller_flow
 import sys
 import os
+from datetime import datetime, timezone
+
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
@@ -47,6 +49,15 @@ class MessageBody(BaseModel):
 class ResponseBody(BaseModel):
     response: str
 
+@app.get("/health")
+async def health_check():
+    """
+    Health check endpoint that returns a JSON response with a status message and a UTC timestamp.
+    """
+    return JSONResponse(
+        status_code=200,
+        content={"status": "ok", "timestamp": datetime.now(timezone.utc).isoformat()}
+    )
 
 
 async def validate_api_key(websocket: WebSocket):
