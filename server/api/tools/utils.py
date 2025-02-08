@@ -149,6 +149,7 @@ class ScraperTool:
         self.proxy_url = None
         self.entries = []
         self.chrome_options = Options()
+        self.chrome_options.add_argument('--no-sandbox')
         self.chrome_options.add_argument('--headless=new')  # Optional: run Chrome in headless mode
         self.chrome_options.add_argument('--disable-gpu')  # Disable GPU acceleration
         self.chrome_options.set_capability('goog:loggingPrefs', {'performance': 'ALL'})
@@ -157,7 +158,6 @@ class ScraperTool:
         self.chrome_options.add_argument("--disable-dev-shm-usage");
         self.chrome_options.add_argument('--start-maximized')
         self.chrome_options.add_argument('--disable-extensions')
-        self.chrome_options.add_argument('--no-sandbox')
         self.chrome_options.add_argument("--disable-infobars")
         self.chrome_options.add_argument("enable-automation")
         self.chrome_options.add_argument("--disable-http2")

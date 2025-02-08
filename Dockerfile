@@ -12,6 +12,27 @@ RUN apt-get update && \
     libgtk-3-0 \
     wget \
     xdg-utils \
+    libxshmfence1 \
+    libgl1 \
+    libegl1 \
+    libgles2 \
+    libglu1-mesa \
+    libglx0 \
+    libxi6 \
+    libxext6 \
+    libx11-6 \
+    libdbus-1-3 \
+    libharfbuzz0b \
+    libasound2 \
+    liblcms2-2 \
+    libopenjp2-7 \
+    libwebp6 \
+    libpixman-1-0 \
+    libxcb-render0 \
+    libxcb-shm0 \
+    libxrender1 \
+    libwayland-client0 \
+    libwayland-server0 \
     libnss3 \
     libnspr4 \
     libatk1.0-0 \
@@ -63,10 +84,13 @@ WORKDIR /server
 
 # Upgrade pip and install dependencies
 COPY server/requirements.txt ./
+# Modify your existing playwright install line
 RUN pip install --upgrade pip && \
     pip install --no-cache-dir -r requirements.txt && \
-    playwright install --with-deps chromium
-
+    playwright install --with-deps chromium && \
+    # Add these lines to fix permissions
+    mkdir -p /home/appuser/.cache/ms-playwright && \
+    chown -R appuser:appuser /home/appuser/.cache
 # Copy in the entire project (adjust as needed)
 COPY server ./
 
