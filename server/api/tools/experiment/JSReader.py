@@ -15,13 +15,11 @@ load_dotenv()
 
 def cookiegetter(url):
     with sync_playwright() as p:
-        browser = p.chromium.launch(
+        user_data_dir = f"/tmp/chrome_{time.time()}"
+        browser = p.chromium.launch_persistent_context(
+            user_data_dir=user_data_dir,
             headless=True,
-            args=[
-                '--disable-dev-shm-usage',
-                '--no-sandbox',
-                f'--user-data-dir=/tmp/chrome_{time.time()}'  # Unique directory
-            ]
+            no_viewport=True
         )
         page = browser.new_page()
         page.goto(url)

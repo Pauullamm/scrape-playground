@@ -1,5 +1,5 @@
 # Use an official Python runtime as the base image
-FROM python:3.13-slim
+FROM --platform=linux/amd64 python:3.13-slim
 
 # Install system dependencies required by Playwright
 RUN apt-get update && \
@@ -12,27 +12,6 @@ RUN apt-get update && \
     libgtk-3-0 \
     wget \
     xdg-utils \
-    libxshmfence1 \
-    libgl1 \
-    libegl1 \
-    libgles2 \
-    libglu1-mesa \
-    libglx0 \
-    libxi6 \
-    libxext6 \
-    libx11-6 \
-    libdbus-1-3 \
-    libharfbuzz0b \
-    libasound2 \
-    liblcms2-2 \
-    libopenjp2-7 \
-    libwebp6 \
-    libpixman-1-0 \
-    libxcb-render0 \
-    libxcb-shm0 \
-    libxrender1 \
-    libwayland-client0 \
-    libwayland-server0 \
     libnss3 \
     libnspr4 \
     libatk1.0-0 \
@@ -53,9 +32,9 @@ RUN apt-get update && \
     ffmpeg \
     && rm -rf /var/lib/apt/lists/*
 
-# Install Google Chrome from the official repository
-RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - && \
-    echo "deb http://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google-chrome.list && \
+# Install Google Chrome from the official repository (amd64)
+RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | gpg --dearmor -o /etc/apt/trusted.gpg.d/google-chrome.gpg && \
+    echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google-chrome.list && \
     apt-get update && \
     apt-get install -y google-chrome-stable
 
@@ -84,28 +63,30 @@ WORKDIR /server
 
 # Upgrade pip and install dependencies
 COPY server/requirements.txt ./
-# Modify your existing playwright install line
 RUN pip install --upgrade pip && \
-    pip install --no-cache-dir -r requirements.txt && \
-    playwright install --with-deps chromium && \
-    # Add these lines to fix permissions
-    mkdir -p /home/appuser/.cache/ms-playwright && \
-    chown -R appuser:appuser /home/appuser/.cache
+    pip install --no-cache-dir -r requirements.txt
+
+# Create a shared directory for Playwright browsers and adjust permissions    
+RUN mkdir -p /ms-playwright && \
+    chmod -R 777 /ms-playwright && \
+    # Set the environment variable so browsers install here
+    PLAYWRIGHT_BROWSERS_PATH=/ms-playwright playwright install --with-deps chromium
+
+# **Set the environment variable for runtime**
+ENV PLAYWRIGHT_BROWSERS_PATH=/ms-playwright
+
 # Copy in the entire project (adjust as needed)
 COPY server ./
 
-# Expose the port that your FastAPI app will run on
-EXPOSE 5000
+RUN adduser --disabled-password --uid 1000 appuser && \
+    chown -R appuser:appuser /server && \
+    chown -R appuser:appuser /ms-playwright
 
-# Create non-root user (UID 1000 is safer for most hosts)
-RUN adduser \
-    --disabled-password \
-    --no-create-home \
-    --uid 1000 \
-    appuser && \
-    chown -R appuser:appuser /server
 
 USER appuser
+
+# Expose the port that your FastAPI app will run on
+EXPOSE 5000
 
 # Start the FastAPI app using uvicorn
 CMD ["uvicorn", "api.main:app", "--host", "0.0.0.0", "--port", "5000"]
