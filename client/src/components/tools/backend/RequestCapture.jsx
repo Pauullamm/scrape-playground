@@ -21,7 +21,7 @@ export default function RequestCapture({ state, setState }) {
     setLoading(true);
     try {
       // Send the request to your backend
-      const response = await fetch(`${BACKEND_URL}/background_capture`, {
+      const response = await fetch(`https://${BACKEND_URL}/background_capture`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

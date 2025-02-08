@@ -13,7 +13,7 @@ export default function HTMLParser({ state, setState }) {
     const handleAnalyze = async () => {
         setLoading(true);
         try {
-            const response = await fetch(`${BACKEND_URL}/foreground_parse`, {
+            const response = await fetch(`https://${BACKEND_URL}/foreground_parse`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
