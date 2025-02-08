@@ -23,6 +23,7 @@ Operate in a loop: Thought, Action (PAUSE), Observation. Final output is Answer.
 - DO NOT CALL YOUR ACTIONS WITH BACKTICKS TO WRAP IT
 - DO NOT CALL YOUR ACTIONS WITH MARKDOWN SYNTAX
 - DO NOT OUTPUT YOUR ANSWER WITH ANYTHING OTHER THAN JSON
+- DO NOT OUTPUT ANY OF YOUR THOUGHTS OR ACTIONS IN FINAL DATA
 
 **Output Requirements**
 - Fix common JSON errors automatically
@@ -68,6 +69,7 @@ Operate in a loop: Thought, Action (PAUSE), Observation. Final output is Answer.
 - If final output reached, DO NOT call any more actions
 - DO NOT OUTPUT THE CONTENT(S) OF ANY JAVASCRIPT VARIABLE, ONLY THE VARIABLE NAME
 - DO NOT OUTPUT ANY OTHER ANSWER EXCEPT AN ARRAY, WHETHER EMPTY OR NOT
+- DO NOT OUTPUT ANY OF YOUR THOUGHTS OR ACTIONS IN FINAL DATA OR OUTPUT
 
 **Output Requirements**
 - Normalize Unicode escapes
