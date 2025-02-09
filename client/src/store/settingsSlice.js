@@ -4,11 +4,10 @@ const loadInitialState = () => {
   const saved = localStorage.getItem('scraper-settings');
   return saved ? JSON.parse(saved) : {
     proxyIps: [],
-    aiModel: 'openai',
+    aiModel: 'gemini',
     customModel: '',
     openaiKey: '',
     geminiKey: '',
-    claudeKey: '',
     huggingfaceKey: '',
   };
 };

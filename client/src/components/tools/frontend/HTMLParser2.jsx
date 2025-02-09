@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useSelector } from 'react-redux';
 
 export default function HTMLParser2({ state, setState }) {
     const [url, setUrl] = useState(state.url || '');
@@ -7,6 +8,8 @@ export default function HTMLParser2({ state, setState }) {
     const [llmOutput, setLlmOutput] = useState(state.llmOutput || null);
     const [callerOutput, setCallerOutput] = useState(state.callerOutput || null);
 
+    const keys = useSelector((state) => state.settings);
+    const API_KEY = keys.aiModel === 'gemini' ? keys.geminiKey : keys.openaiKey;
     const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
     const handleAnalyze = async () => {
@@ -17,6 +20,7 @@ export default function HTMLParser2({ state, setState }) {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${API_KEY}`,
                 },
                 body: JSON.stringify({ message: url }),
             });

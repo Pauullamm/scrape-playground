@@ -15,7 +15,7 @@ export default function RequestCapture({ state, setState }) {
 
   const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
   const keys = useSelector((state) => state.settings);
-  const API_KEY = keys.openaiKey;
+  const API_KEY = keys.aiModel === 'gemini' ? keys.geminiKey : keys.openaiKey;
 
   const handleAnalyze = async () => {
     setLoading(true);
@@ -25,6 +25,7 @@ export default function RequestCapture({ state, setState }) {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${API_KEY}`,
         },
         body: JSON.stringify({
           message: url,

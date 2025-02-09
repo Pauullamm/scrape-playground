@@ -132,7 +132,7 @@ def retrieve_js_content(url: str) -> any:
     return pre_process(link=url)
 
 
-def call_llm(system_prompt:str, message:str) -> str:
+def call_llm(api_key:str, system_prompt:str, message:str) -> str:
     api_key = os.getenv('GEMINI_API_KEY')
     genai.configure(api_key=api_key)
     model = genai.GenerativeModel(model_name="gemini-2.0-flash-exp", system_instruction=system_prompt)
@@ -161,10 +161,10 @@ class LoadJS(Node):
 class ReadJS(Node):
     def prep(self, shared: dict) -> list[str]:
         # print(shared)
-        return shared["data"]
+        return [shared["data"], shared["api_key"]]
     
     def exec(self, prep_res: list[str]):
-        llm_output = call_llm(system_prompt=PF_PARSER_PROMPT, message=str(prep_res))
+        llm_output = call_llm(api_key=str(prep_res[1]), system_prompt=PF_PARSER_PROMPT, message=str(prep_res[0]))
         return llm_output
         
     def post(self, shared, p, exec_res): 

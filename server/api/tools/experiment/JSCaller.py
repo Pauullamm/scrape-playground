@@ -7,6 +7,7 @@ from dotenv import load_dotenv
 from .prompt import PF_INSPECTOR_PROMPT
 import ast
 import logging
+import time
 
 logger = logging.getLogger(__name__)
 
@@ -22,7 +23,12 @@ def return_js_variable(url: str, variable_name: str) -> any:
         variable_name: name of the javascript variable to return
     '''
     with sync_playwright() as p:
-        browser = p.chromium.launch(headless=True)
+        user_data_dir = f"/tmp/chrome_{time.time()}"
+        browser = p.chromium.launch_persistent_context(
+            user_data_dir=user_data_dir,
+            headless=True,
+            no_viewport=True
+        )
         page = browser.new_page()
         page.goto(url, wait_until="domcontentloaded")
 
@@ -62,10 +68,10 @@ def return_var(url: str, var_name: str) -> any:
         
 class VarInspector(Node):
     def prep(self, shared):
-        return shared["data"]
+        return [shared["data"], shared["api_key"]]
     
     def exec(self, prep_res):
-        response = call_llm(system_prompt=PF_INSPECTOR_PROMPT, message=str(prep_res))
+        response = call_llm(api_key=str(prep_res[1]), system_prompt=PF_INSPECTOR_PROMPT, message=str(prep_res[0]))
         
         return response
     def post(self, shared, prep_res, exec_res):

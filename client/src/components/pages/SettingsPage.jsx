@@ -6,11 +6,10 @@ import { updateSettings } from '../../store/settingsSlice';
 export default function SettingsPage({
     settings = {
         proxyIps: [],
-        aiModel: 'openai',
+        aiModel: 'gemini',
         customModel: '',
         openaiKey: '',
         geminiKey: '',
-        claudeKey: '',
         huggingfaceKey: ''
     },
     onSave = (newSettings) => {
@@ -30,7 +29,6 @@ export default function SettingsPage({
                 customModel: formData.get('customModel'),
                 openaiKey: formData.get('openaiKey'),
                 geminiKey: formData.get('geminiKey'),
-                claudeKey: formData.get('claudeKey'),
                 huggingfaceKey: formData.get('huggingfaceKey'),
             };
             onSave(newSettings);
@@ -79,8 +77,8 @@ export default function SettingsPage({
                             defaultValue={settings.aiModel}
                             className="w-full bg-gray-900 border border-gray-700 rounded-lg p-2"
                         >
-                            <option value="openai">OpenAI</option>
                             <option value="gemini">Google Gemini</option>
+                            <option value="openai">OpenAI</option>
                             <option value="huggingface">Hugging Face (Custom)</option>
                         </select>
                     </div>
@@ -154,7 +152,6 @@ SettingsPage.propTypes = {
         customModel: PropTypes.string,
         openaiKey: PropTypes.string,
         geminiKey: PropTypes.string,
-        claudeKey: PropTypes.string,
         huggingfaceKey: PropTypes.string
     }),
     onSave: PropTypes.func.isRequired

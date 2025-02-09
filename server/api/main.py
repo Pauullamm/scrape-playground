@@ -94,37 +94,44 @@ async def generate_response(request: Request, message_body: MessageBody):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 @app.post("/foreground_parse")
-def foreground_parse(message_body: MessageBody):
+def foreground_parse(request: Request, message_body: MessageBody):
     """
     This endpoint allows the user to parse HTML to look for JSON-like content embedded in the frontend DOM.
     It receives a URL and the HTML content is requested to be parsed.
     """
     try:
+        auth_header = request.headers.get("Authorization")
+        token = auth_header.split(" ")[1] if auth_header.startswith("Bearer ") else None
+
+        if not token:
+            raise HTTPException(status_code=404, detail="api_key not found")
         # Initialize memory dictionaries
-        reader_mem = {
+        reader_memory = {
             "url": message_body.message,
             "variables": [],
-            "llm_output": ""
+            "llm_output": "",
+            "api_key": token
         }
         
-        caller_mem = {
+        caller_memory = {
             "url": message_body.message,
             "variables": [],
-            "llm_output": ""
+            "llm_output": "",
+            "api_key": token
         }
 
         # Run the reader flow
-        reader_flow.run(shared=reader_mem)
+        reader_flow.run(shared=reader_memory)
         reader_output = {
-            "url": reader_mem["url"],
-            "llm_output": reader_mem["llm_output"].strip('```json')
+            "url": reader_memory["url"],
+            "llm_output": reader_memory["llm_output"].strip('```json')
         }
 
         # Run the caller flow
-        caller_flow.run(shared=caller_mem)
+        caller_flow.run(shared=caller_memory)
         caller_output = {
-            "url": caller_mem["url"],
-            "caller_output": caller_mem["output"]
+            "url": caller_memory["url"],
+            "caller_output": caller_memory["output"]
         }
 
         # Return the response with the parsed outputs
