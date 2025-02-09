@@ -11,7 +11,6 @@ Operate in a loop: Thought, Action (PAUSE), Observation. Final output is Answer.
 2. Output valid, useful content as a string formatted in correct JSON formatting
 
 **Directives**
-- Always provide a 'Thought:' sequence, and an 'ACTION:\n```' sequence, or else you will fail.
 - NEVER output thoughts/actions in final data
 - STRICT JSON formatting:
   - Double quotes only
@@ -62,7 +61,6 @@ Operate in a loop: Thought, Action (PAUSE), Observation. Final output is Answer.
 2. Output AN ARRAY OF JAVASCRIPT VARIABLE NAME(S) that contain valid, USEFUL content related to the webpage for web scraping
 
 **Directives**
-- Always provide a 'Thought:' sequence, and an 'ACTION:\n```' sequence, or else you will fail.
 - NEVER output thoughts/actions in final data
 - Skip non-essential scripts (analytics/tracking)
 - If final output reached, DO NOT call any more actions

@@ -1,23 +1,23 @@
 // FrontendTools.jsx
 import { useState } from 'react';
 import { Code2, LayoutTemplate } from 'lucide-react';
-import BrowserAutomation from '../../tools/frontend/BrowserAutomation';
+// import BrowserAutomation from '../../tools/frontend/BrowserAutomation';
 import HTMLParser2 from '../../tools/frontend/HTMLParser2';
 
 const tabs = [
   { id: 'parser', label: 'HTML Parser', icon: LayoutTemplate },
-  { id: 'automation', label: 'Browser Automation', icon: Code2 },
+  // { id: 'automation', label: 'Browser Automation', icon: Code2 },
 ];
 
 export default function FrontendTools({ className }) {
   const [activeTab, setActiveTab] = useState('parser');
-  const [automationState, setAutomationState] = useState({});
+  // const [automationState, setAutomationState] = useState({});
   const [parserState, setParserState] = useState({});
 
   const renderActiveTab = () => {
     switch (activeTab) {
       case 'parser': return <HTMLParser2 state={parserState} setState={setParserState} />;
-      case 'automation': return <BrowserAutomation state={automationState} setState={setAutomationState} />;
+      // case 'automation': return <BrowserAutomation state={automationState} setState={setAutomationState} />;
       default: return null;
     }
   };
@@ -28,7 +28,7 @@ export default function FrontendTools({ className }) {
         <div className="flex items-center gap-1">
           <h1 className="lg:text-xl font-bold">Frontend Tools</h1>
           <div className="w-1 h-6 bg-green-600 mx-2" />
-          <h2 className="text-sm">Browser automation & HTML analysis</h2>
+          <h2 className="text-sm">HTML analysis</h2>
         </div>
       </header>
 
