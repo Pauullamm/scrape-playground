@@ -5,10 +5,10 @@ from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 from load_dotenv import load_dotenv
 from datetime import datetime, timezone
-from tools.agent_tools import scrape_background_requests
-from tools.v2.JSReader import reader_flow
-from tools.v2.JSCaller import caller_flow
-from tools.v2.extractor import extract
+from .tools.agent_tools import scrape_background_requests
+from .tools.v2.JSReader import reader_flow
+from .tools.v2.JSCaller import caller_flow
+from .tools.v2.extractor import extract
 import uvicorn
 import os
 import sys
