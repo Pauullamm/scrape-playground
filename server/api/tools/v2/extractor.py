@@ -65,4 +65,4 @@ def extract(url:str) -> dict:
     
     return data
 
-extract(url='https://www.jdsports.co.uk/men/mens-footwear/')
+# extract(url='https://www.jdsports.co.uk/men/mens-footwear/')

@@ -7,7 +7,6 @@ from selenium.webdriver.support.wait import WebDriverWait
 from seleniumwire.utils import decode
 import re
 import logging
-from json5 import loads as json5_loads
 from bs4 import BeautifulSoup
 from typing import List, Dict, Union
 from ..tools.cookiegetter import cookiegetter
@@ -150,7 +149,7 @@ class ScraperTool:
         self.entries = []
         self.chrome_options = Options()
         self.chrome_options.add_argument('--no-sandbox')
-        self.chrome_options.add_argument('--headless=new')  # Optional: run Chrome in headless mode
+        self.chrome_options.add_argument('--headless')  # Optional: run Chrome in headless mode
         self.chrome_options.add_argument('--disable-gpu')  # Disable GPU acceleration
         self.chrome_options.set_capability('goog:loggingPrefs', {'performance': 'ALL'})
         self.chrome_options.add_argument('--disable-blink-features=AutomationControlled')
@@ -162,6 +161,15 @@ class ScraperTool:
         self.chrome_options.add_argument("enable-automation")
         self.chrome_options.add_argument("--disable-http2")
         self.chrome_options.add_argument('--disable-search-engine-choice-screen')
+        self.chrome_options.add_argument("--disable-renderer-backgrounding")
+        self.chrome_options.add_argument('--disable-renderer-backgrounding')
+        self.chrome_options.add_argument('--single-process')  # New
+        self.chrome_options.add_argument('--no-zygote')  # New
+        self.chrome_options.add_argument('--disable-site-isolation-trials')
+        self.chrome_options.add_argument('--disable-features=VizDisplayCompositor')
+        self.chrome_options.add_argument("--user-data-dir=/tmp/chrome-user-data")
+        self.chrome_options.add_argument("--profile-directory=Default")
+
         self.chrome_options.set_capability('pageLoadStrategy', 'eager')  # Don't wait for full load
         # self.chrome_options.add_argument('--disable-software-rasterizer')
         # self.chrome_options.add_argument('--disable-features=NetworkService')
@@ -258,14 +266,21 @@ class ScraperTool:
             options=self.chrome_options,
             seleniumwire_options={
                 'disable_encoding': True,
-                'connection_timeout': 60,
-                'ignore_http_methods': [],
-                'exclude_hosts': ['google-analytics.com', 'www.google-analytics.com', 'www.googletagmanager.com', 'doubleclick.net'],
+                'connection_timeout': 120,
+                'ignore_http_methods': ['OPTIONS', 'HEAD'],
+                'exclude_hosts': [
+                    'google-analytics.com', 
+                    'www.google-analytics.com', 
+                    'www.googletagmanager.com', 
+                    'doubleclick.net',
+                    'fonts.googleapis.com',
+                    'static.xx.fbcdn.net'
+                    ],
                 }
             )
         driver.set_page_load_timeout(60)
         driver.get(url)
-        WebDriverWait(driver, 30).until(
+        WebDriverWait(driver, 60).until(
             lambda d: d.execute_script('return document.readyState') == 'complete'
         )
         time.sleep(3)
