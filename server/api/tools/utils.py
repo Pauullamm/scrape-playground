@@ -464,7 +464,7 @@ class HTMLParser:
         }
         cookies = {cookie['name']: cookie['value'] for cookie in cookie_list}
 
-        res = requests.get(url=link, headers=headers, cookies=cookies)
+        res = requests.get(url=link, headers=headers, cookies=cookies, timeout=30)
         # if re.match(json_regex, link):
         #     return res.json()
         # else:
