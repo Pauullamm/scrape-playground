@@ -5,12 +5,12 @@ Terrier AI helps you extract structured data from webpages.
 ## Key Features ✨
 
 ### 📄 HTML-JSON Extraction
-- Parsing of browser HTML to look for json-like content
-- Work in Progress
+- Parsing of browser HTML to look for structured content
+- Uses Gemini's long context window under the hood to process HTML
 
 ### (New!) Chrome Extension - Terrier Pup
 - Coming Soon
-- 
+  
 ## Getting Started 🚀
 
 ### Prerequisites
@@ -55,19 +55,26 @@ To run this project, you will need to add the following environment variables to
 `VITE_BACKEND_URL=your_backend_url_or_localhost`
 
 ## Running the Application
-Start both services simultaneously in separate terminals:
+Start both services simultaneously in separate terminals (We recommend using Docker to run the server to avoid versioning issues):
+
+Frontend:
 ```bash
 cd client && npm run dev
-cd api && python main.py
+```
+
+Backend:
+```bash
+docker build -t <image_name> .
+docker run -p 5000:5000 <image_name>
 ```
 
 ## Tech Stack
 
 **Client:** React, Redux, TailwindCSS
 
-**API:** FasAPI, Playwright, Selenium Wire, langchain, browser-use
+**API:** FastAPI, Playwright, Selenium Wire, langchain, browser-use
 
-**AI Components:** Custom agent implementations, smolagents class
+**AI Components:** Custom agent implementations, smolagents class, pocketflow framework
 
 
 ## Contributing
