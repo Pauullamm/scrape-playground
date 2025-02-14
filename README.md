@@ -1,22 +1,10 @@
 # Terrier AI - Your Web Scraping Companion 🐕 [![Netlify Status](https://api.netlify.com/api/v1/badges/ee4d5468-c54e-4c70-8711-02cc2115339b/deploy-status)](https://app.netlify.com/sites/terrier-hunt/deploys)
 
-Terrier AI combines web scraping tools with AI agents to simplify data extraction. Our platform aims to automate tedious data collection tasks while maintaining compliance with website policies.
+Terrier AI helps you extract structured data from webpages. 
 
 ## Key Features ✨
 
-### 🕵️ Background Requests Capture
-- Automatically track and record all network activity during url calls
-- Examine captured requests for analysis or replay
-
-### 🔧 API Testing Toolkit
-- Postman-style interface for API exploration and validation
-
-### 🤖 AI Agent Automation
-- Natural language instructions for browser automation
-- Built on [browser-use](https://browser-use.com/) for intelligent DOM interaction
-- Automatic retry and error recovery mechanisms
-
-### (New!) 📄 HTML-JSON Extraction
+### 📄 HTML-JSON Extraction
 - Parsing of browser HTML to look for json-like content
 - Work in Progress
 
@@ -62,11 +50,9 @@ pip install -r requirements.txt
 
 To run this project, you will need to add the following environment variables to your .env file(s) (depending on your usage)
 
-`OPENAI_API_KEY=your_openai_api_key`
+`GEMINI_API_KEY=your_gemini_api_key`
 
-`DEEPSEEK_API_KEY=your_deepseek_api_key`
-
-`REACT_APP_OPENAI_API_KEY=your_openai_api_key`
+`VITE_BACKEND_URL=your_backend_url_or_localhost`
 
 ## Running the Application
 Start both services simultaneously in separate terminals:
@@ -81,7 +67,7 @@ cd api && python main.py
 
 **API:** FasAPI, Playwright, Selenium Wire, langchain, browser-use
 
-**AI Components:** Custom agent implementations, browser-use integration, smolagents class
+**AI Components:** Custom agent implementations, smolagents class
 
 
 ## Contributing

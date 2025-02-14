@@ -5,7 +5,6 @@ from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 from load_dotenv import load_dotenv
 from datetime import datetime, timezone
-from .tools.agent_tools import scrape_background_requests
 from .tools.v2.JSReader import reader_flow
 from .tools.v2.JSCaller import caller_flow
 from .tools.v2.extractor import extract
@@ -63,9 +62,10 @@ def foreground_parse(request: Request, message_body: MessageBody):
     It receives a URL and the HTML content is requested to be parsed.
     """
     try:
+        
+        # AI method
         auth_header = request.headers.get("Authorization")
         token = auth_header.split(" ")[1] if auth_header.startswith("Bearer ") else None
-
         if not token:
             raise HTTPException(status_code=404, detail="api_key not found")
         # Initialize memory dictionaries
@@ -97,9 +97,13 @@ def foreground_parse(request: Request, message_body: MessageBody):
             "caller_output": caller_memory["output"]
         }
 
+        #Extruct method
+        
+        extruct_data = extract(url=message_body.message)
+        
         # Return the response with the parsed outputs
         return JSONResponse(
-            content=[jsonable_encoder(reader_output), jsonable_encoder(caller_output)]
+            content=[jsonable_encoder(reader_output), jsonable_encoder(caller_output), jsonable_encoder(extruct_data)]
         )
     
     except Exception as e:
@@ -110,28 +114,6 @@ def foreground_parse(request: Request, message_body: MessageBody):
             status_code=500,
             headers={"Access-Control-Allow-Origin": ",".join(origins)}
         )
-   
-@app.post("/background_capture")
-def background_capture(message_body: MessageBody):
-    '''
-    This endpoint allows the user to listen in to background requests that are called by their target site when loading
-    Information on the background requests and the returning response data is forwarded to the user
-    '''
-    try:
-
-        back_data = scrape_background_requests(message_body.message)
-        # logger.info(data)
-        return JSONResponse(
-            content=jsonable_encoder(back_data)
-        )
-    except Exception as e:
-        logger.info(str(e))
-        return JSONResponse(
-            content={"error": str(e)},
-            status_code=500,
-            headers={"Access-Control-Allow-Origin": ",".join(origins)}
-        )
-
  
 @app.post("/admin/shutdown")
 async def shutdown_server():

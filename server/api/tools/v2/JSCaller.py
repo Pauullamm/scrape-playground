@@ -72,7 +72,6 @@ class VarInspector(Node):
     
     def exec(self, prep_res):
         response = call_llm(api_key=str(prep_res[1]), system_prompt=PF_INSPECTOR_PROMPT, message=str(prep_res[0]))
-        
         return response
     def post(self, shared, prep_res, exec_res):
         shared["variables"] = exec_res

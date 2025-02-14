@@ -3,46 +3,6 @@
 }
 
 /* From Uiverse.io by TimTrayler */
-.switch {
-    --secondary-container: #3a4b39;
-    --primary: #84da89;
-    font-size: 17px;
-    position: relative;
-    display: inline-block;
-    width: 1.85em;
-    height: 0.9em;
-  }
-  
-  .switch input {
-    display: none;
-    opacity: 0;
-    width: 0;
-    height: 0;
-  }
-  
-  .slider {
-    position: absolute;
-    cursor: pointer;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: #313033;
-    transition: 0.2s;
-    border-radius: 30px;
-  }
-  
-  .slider:before {
-    position: absolute;
-    content: "";
-    height: 0.7em;
-    width: 0.7em;
-    border-radius: 20px;
-    left: 0.1em;
-    bottom: 0.1em;
-    background-color: #aeaaae;
-    transition: 0.4s;
-  }
   
   input:checked + .slider::before {
     background-color: var(--primary);
@@ -103,20 +63,4 @@ body {
 /* Gradient text support */
 .bg-gradient-to-r {
   background-size: 200% auto;
-}
-
-/* Enhanced input focus */
-input:focus {
-  outline: none;
-  box-shadow: 0 0 0 3px rgba(251, 191, 36, 0.5);
-}
-
-/* Scroll hint animation */
-@keyframes bounce {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-10px); }
-}
-
-.animate-bounce {
-  animation: bounce 2s infinite;
 }

@@ -5,20 +5,13 @@ import { Link } from 'react-router-dom';
 export default function Navbar({ supabaseClient, setSession }) {
     const [sidebarOpen, setSidebarOpen] = useState(false);
 
-    async function signOut() {
-        const { error } = await supabaseClient.auth.signOut();
-        if (error) {
-            console.log(error);
-        }
-        setSession(null);
-    }
     return (
         <>
             {/* Navbar */}
-            <header className="h-16 border-b border-[#2A2A2A] p-4 sticky top-0 bg-transparent backdrop-blur-lg z-50">
+            <header className="h-16 border-b border-[#2A2A2A] p-4 top-0 z-50">
                 <div className="max-w-7xl mx-auto flex items-center justify-between">
                     {/* Left side - Branding */}
-                    <Link to="/home" className="flex items-center gap-1 bg-opacity-40 hover:opacity-80 transition-opacity">
+                    <Link to="/" className="flex items-center gap-1 bg-opacity-40 hover:opacity-80 transition-opacity">
                         <h1 className="text-3xl font-extrabold">Terrier</h1>
                         <img
                             src='whiteDog.png'
@@ -56,18 +49,6 @@ export default function Navbar({ supabaseClient, setSession }) {
                         <Settings className="w-6 h-6" />
                         <span className="text-lg">Settings</span>
                     </Link>
-                    <Link to="/tools" className="flex items-center gap-3 p-3 rounded-lg hover:bg-[#2A2A2A] transition-colors">
-                        <Database className="w-6 h-6" />
-                        <span className="text-lg">Tools</span>
-                    </Link>
-                    {/* Sign Out Button */}
-                    <button 
-                        className="flex items-center gap-3 p-3 rounded-lg hover:bg-[#2A2A2A] transition-colors"
-                        onClick={signOut}
-                    >
-                        <LogOut className="w-6 h-6" />
-                        <span className="text-lg">Sign Out</span>
-                    </button>
                 </div>
             </div>
 

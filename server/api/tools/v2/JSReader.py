@@ -47,7 +47,6 @@ def get_resource(link:str) -> str:
         "Accept-Language": "en-US,en;q=0.5",  # Language preference
         "Connection": "keep-alive",  # Keep the connection open for multiple requests (like a real browser)
         "Upgrade-Insecure-Requests": "1",  # Tells the server to upgrade any HTTP requests to HTTPS if possible
-        "TE": "Trailers",  # Common header for some browsers
         "Referer": "http://www.google.com"
     }
     cookies = {cookie['name']: cookie['value'] for cookie in cookie_list}
@@ -153,10 +152,6 @@ class LoadJS(Node):
         url = shared["url"]
         data = pre_process(url)
         shared["data"] = data
-    
-    def exec(self, prep_res): pass
-    
-    def post(self, shared, prep_res, exec_res): pass
     
 class ReadJS(Node):
     def prep(self, shared: dict) -> list[str]:

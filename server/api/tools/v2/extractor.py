@@ -46,23 +46,18 @@ def get_resource(link:str) -> str:
     cookies = {cookie['name']: cookie['value'] for cookie in cookie_list}
 
     res = requests.get(url=link, headers=headers, cookies=cookies)
-    # if re.match(json_regex, link):
-    #     return res.json()
-    # else:
-    #     return res.text.strip()
+
     return res.text.strip(), get_base_url(res.text, res.url)
 
 def extract(url:str) -> dict:
+    """
+    Extracts structured data after retrieving from a resource
+    """
     response = get_resource(url)
 
     data = extruct.extract(response[0], base_url=response[1], errors="ignore")
-    # loader = JsonLdExtractor()
-    # data = loader.extract(response[0])
-    print(data)
-    pp = pprint.PrettyPrinter(indent=2)
+
     with open('outputB.json', 'w') as f:
         json.dump(data, f, indent=4)
     
     return data
-
-# extract(url='https://www.jdsports.co.uk/men/mens-footwear/')
