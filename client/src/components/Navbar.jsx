@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Settings, Database, Menu, X, LogOut } from 'lucide-react';
+import { Settings, Menu, X } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 export default function Navbar({ supabaseClient, setSession }) {
@@ -8,25 +8,25 @@ export default function Navbar({ supabaseClient, setSession }) {
     return (
         <>
             {/* Navbar */}
-            <header className="h-16 border-b border-[#2A2A2A] p-4 top-0 z-50">
+            <header className="h-16 p-4 bg-gray-100 top-0 z-50">
                 <div className="max-w-7xl mx-auto flex items-center justify-between">
                     {/* Left side - Branding */}
                     <Link to="/" className="flex items-center gap-1 bg-opacity-40 hover:opacity-80 transition-opacity">
-                        <h1 className="text-3xl font-extrabold">Terrier</h1>
+                        <h1 className="text-3xl font-extrabold text-gray-600">Terrier</h1>
                         <img
-                            src='whiteDog.png'
-                            className="h-8 w-8 ml-1"
+                            src='blackDog.png'
+                            className="h-7 w-7"
                             alt="Terrier logo"
                         />
-                        <h2 className="sm:block hidden text-md italic ml-2 ">Your Web Scraping Companion</h2>
+                        <h2 className="sm:block hidden text-md italic ml-2 text-gray-600 ">Your Web Scraping Companion</h2>
                     </Link>
 
                     {/* Right side - Hamburger Menu */}
                     <button 
-                        className="p-2 rounded-lg hover:bg-[#2A2A2A] transition-colors"
+                        className="p-2 rounded-lg hover:bg-gray-500 transition-colors"
                         onClick={() => setSidebarOpen(true)}
                     >
-                        <Menu className="w-6 h-6" />
+                        <Menu className="w-6 h-6 text-gray-400" />
                     </button>
                 </div>
             </header>

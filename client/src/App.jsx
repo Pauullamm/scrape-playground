@@ -3,7 +3,7 @@ import React from 'react';
 import Navbar from './components/Navbar';
 import ToolsPage from './components/ToolsPage';
 import SettingsPage from './components/SettingsPage'
-import { BrowserRouter, Route, Router, Routes } from 'react-router';
+import {  Route, Routes } from 'react-router';
 
 export default function App() {  
 
